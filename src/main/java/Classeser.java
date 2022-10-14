@@ -35,11 +35,48 @@ public class Classeser {
     }
 
     public static void storageDist(){
-        routersAndOthersDist();
+        //routersAndOthersDist();
         allResIsDist();
     }
 
-    public static void routersAndOthersDist(){}
+  /*  public static void routersAndOthersDist(){
+        //если после размещения стораджей хватает места на размещения роутеров
+        while ( tmpRouterNumber > 0 && serverCore >= CORE && serverRAM >= INSTANCE_RAM ){
+            tmpRouterNumber--;
+            serverCore-=CORE;
+            serverRAM-=INSTANCE_RAM;
+            tmpRouterRAM-=INSTANCE_RAM;
+            tmpRouterProcess-=CORE;
+
+        }
+        // если все роутеры размещены, то переключаем флаг
+
+        if (tmpRouterNumber == 0){
+            routersFlag = false;
+        }
+
+        //если после размещения на сервере хватает места для размещения ETCD
+        if (serverRAM >= ETCD_RAM && serverCore >= CORE){
+            serverCore-=CORE;
+            serverRAM-=ETCD_RAM;
+            ETCDFlag= false;
+        }
+
+
+        // если после всез размещений хватает места для размещения nginx
+        if (serverRAM >= INSTANCE_RAM && serverCore >= CORE){
+            serverCore-=CORE;
+            serverRAM-=INSTANCE_RAM;
+            nginxFlag= false;
+        }
+
+        // если после всез размещений хватает места для размещения core
+        if (serverRAM >= INSTANCE_RAM && serverCore >= CORE){
+            serverCore-=CORE;
+            serverRAM-=INSTANCE_RAM;
+            coreFlag= false;
+        }
+    }*/
 
     public static void allResIsDist(){}
 

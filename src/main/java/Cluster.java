@@ -6,6 +6,7 @@
 // 4) доделать анализ распределения всех ресурсов,
 // 5) какой номер стораджа идет в какой сервер
 
+
 // 6) Разделить роутеры оптимально на
 
 public class Cluster {
@@ -56,7 +57,7 @@ public class Cluster {
         // 100% amount of data
         double dataVolume = acceptableAmountOfData/0.8;
         // Start storage Cores
-        double optimalCoreNumbers = Math.ceil(dataVolume/32.)*1.5;
+        double optimalCoreNumbers = Math.ceil(dataVolume/32.)*CORE;
         // подходящие конфигурации
         String[] configVariation = new String[12];
         int configVarCounter =0;
@@ -66,6 +67,7 @@ public class Cluster {
 
             // рассчитываем колличество стороджей
             int tmpN = (int) Math.ceil(dataVolume/(double)i);
+            System.out.println("tmpN: "+tmpN);
             // возможное оптимальное число ядер на стораджи
             double tmpOptimalCoreNumbers = tmpN * 1.5;
 
@@ -97,6 +99,7 @@ public class Cluster {
                 boolean nginxFlag = true;
                 boolean ETCDFlag = true;
                 boolean coreFlag = true;
+
                 //configDis
                 while (tempConfPlace < 4 && tmpRAM > 0){
                     boolean flag = true;
@@ -108,14 +111,18 @@ public class Cluster {
                     // сколько можно положить стораджей на один сервер
                     int storageBox = (int )Math.floor(tRAM/i);
                     System.out.println("tCore: " + tCore + " tRAM: " + tRAM +" storageBox: " + storageBox);
+
                     int tmpRouterNumber = routerNumber;
                     double tmpRouterRAM =RAMForRouters;
                     double tmpRouterProcess = processForRouters;
+
+                    String  storages = "";
 
 
                     // размещаем стораджи
                     //storageDist
                     int tS =0;
+                    int storageIndex = 0;
                     while(flag){
 
                         //доступных ресурсов на конкретном сервере
@@ -123,6 +130,7 @@ public class Cluster {
                         double serverCore = tCore;
 
                         // если хватает места для размещения максимального колличества стораджей на один сервер
+                        System.out.println( "1: " + (processForStorage >= tCore) + " 2: " + (RAMForStorage >= tRAM) + " 3: " +  (tmpN >= storageBox));
                         if ( processForStorage >= tCore && RAMForStorage >= tRAM && tmpN >= storageBox){
                             serverRAM -= storageBox*i;
                             serverCore -= storageBox*CORE;
@@ -131,62 +139,35 @@ public class Cluster {
                             tmpRAM  -= storageBox*i;
                             tmpCore -= storageBox*CORE;
                             tmpN -= storageBox;
+                            System.out.println("tmpN: " + tmpN);
+
+                            System.out.println( "ServerName: "+tConf[0]+ " number in cluster: " + tS+ " Storages: " + storageIndex+"-"
+                                    + (storageIndex+storageBox) + " Free RAM: " + serverRAM
+                                    + " Free Core: " + serverCore +"\n");
+                            storageIndex+=storageBox+1;
                             tS++;
-
-                            //если после размещения стораджей хватает места на размещения роутеров
-                            while ( tmpRouterNumber > 0 && serverCore >= CORE && serverRAM >= INSTANCE_RAM ){
-                                tmpRouterNumber--;
-                                serverCore-=CORE;
-                                serverRAM-=INSTANCE_RAM;
-                                tmpRouterRAM-=INSTANCE_RAM;
-                                tmpRouterProcess-=CORE;
-
-                            }
-                            // если все роутеры размещены, то переключаем флаг
-
-                            if (tmpRouterNumber == 0){
-                                routersFlag = false;
-                            }
-
-                            //если после размещения на сервере хватает места для размещения ETCD
-                            if (serverRAM >= ETCD_RAM && serverCore >= CORE){
-                                serverCore-=CORE;
-                                serverRAM-=ETCD_RAM;
-                                ETCDFlag= false;
-                            }
-
-
-                            // если после всез размещений хватает места для размещения nginx
-                            if (serverRAM >= INSTANCE_RAM && serverCore >= CORE){
-                                serverCore-=CORE;
-                                serverRAM-=INSTANCE_RAM;
-                                nginxFlag= false;
-                            }
-
-                            // если после всез размещений хватает места для размещения core
-                            if (serverRAM >= INSTANCE_RAM && serverCore >= CORE){
-                                serverCore-=CORE;
-                                serverRAM-=INSTANCE_RAM;
-                                coreFlag= false;
-                            }
-
 
                         }
                         else{
                             //размещение оставшихся
+                            System.out.println(tmpN - storageBox);
                             serverRAM -= (tmpN - storageBox)*i;
                             serverCore -= (tmpN - storageBox)*CORE;
                             RAMForStorage  -= (tmpN - storageBox)*i;
                             processForStorage -= (tmpN - storageBox)*CORE;
                             tmpRAM  -= (tmpN - storageBox)*i;
                             tmpCore -= (tmpN - storageBox)*CORE;
+                            System.out.println( "ServerName: "+tConf[0]+ " number in cluster: " + tS+ " Storages: " + storageIndex+"-"
+                                    + (storageIndex+tmpN - storageBox) + " Free RAM: " + serverRAM
+                                    + " Free Core: " + serverCore +"\n");
+
                             tS++;
 
                             flag=false;
                         }
 
-                        System.out.println("Free space: "+ serverRAM + " Free cores: " + serverCore);
-                        System.out.println("Flag: " + flag);
+                        /*System.out.println("Free space: "+ serverRAM + " Free cores: " + serverCore);
+                        System.out.println("Flag: " + flag);*/
 
 
                     }
