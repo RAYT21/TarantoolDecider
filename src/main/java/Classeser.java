@@ -8,8 +8,12 @@ public class Classeser {
     private static final String[] configures = new String[]{
             "Config#1 16 128",
             "Config#2 8 64",
+            "Config#2 8 48",
             "Config#3 4 32",
             "Config#4 4 16",
+            "Config#5 4 16",
+            "Config#6 4 16",
+            "Config#7 4 16"
     };
 
     public static void main(String[] args) {
