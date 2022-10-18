@@ -100,7 +100,7 @@ public class Cluster {
                 boolean ETCDFlag = true;
                 boolean coreFlag = true;
 
-                //configDis
+                //clusterDis
                 while (tempConfPlace < 4 && tmpRAM > 0){
                     boolean flag = true;
                     String[] tConf = configures[tempConfPlace].split(" ");
