@@ -1,6 +1,7 @@
-package newverison.server;
+package server;
 
-import newverison.instances.*;
+import instances.Router;
+import instances.Storage;
 
 import java.util.ArrayList;
 import java.util.List;

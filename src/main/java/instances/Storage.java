@@ -1,26 +1,30 @@
-package newverison.instances;
+package instances;
 
-public class Router {
+public class Storage {
 
     private int id;
-    public static final double ram = 0.25;
-    public static final double core = 1.5;
+    private double ram;
+    public final double core = 1.5;
 
-    public Router(int id) {
+    public Storage(int id, double ram) {
         this.id = id;
+        this.ram = ram;
     }
 
     public int getId() {
         return id;
     }
+
+    public double getRam() {
+        return ram;
+    }
+
     @Override
     public String toString() {
-        return "Router{" +
+        return "Storage{" +
                 "id=" + id +
                 ", ram=" + ram +
                 ", core=" + core +
                 '}';
     }
-
-
 }

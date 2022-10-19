@@ -1,6 +1,5 @@
-package newverison.server;
+package server;
 
-import newverison.Cluster;
 
 public class Server {
     private int id;
@@ -33,13 +32,5 @@ public class Server {
         return new Server();
     }
 
-    public void fillNewServer(Cluster cluster, int  lessStorages){
 
-        if (lessStorages <=0) return;
-
-
-
-
-
-    }
 }

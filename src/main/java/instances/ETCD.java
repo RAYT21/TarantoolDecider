@@ -1,4 +1,4 @@
-package newverison.instances;
+package instances;
 
 public class ETCD {
     public static final double ram = 2;

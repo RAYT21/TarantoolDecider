@@ -1,6 +1,7 @@
-package newverison.server;
+package server;
 
-import newverison.Config;
+
+import configClasses.Config;
 
 public class ServerConfig {
     private final Config config;

@@ -1,4 +1,4 @@
-package newverison.server;
+package server;
 
 public class ServerInfo {
     private double freeRAM;

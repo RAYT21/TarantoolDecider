@@ -1,4 +1,4 @@
-package newverison;
+package configClasses;
 
 public class Config {
 
@@ -26,7 +26,7 @@ public class Config {
 
     @Override
     public String toString() {
-        return "Config{" +
+        return "configClasses.Config{" +
                 "RAM=" + RAM +
                 ", CORE=" + CORE +
                 ", PRICE=" + PRICE +

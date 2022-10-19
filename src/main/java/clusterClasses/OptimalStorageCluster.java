@@ -1,4 +1,4 @@
-package newverison;
+package clusterClasses;
 
 public class OptimalStorageCluster {
 
@@ -39,7 +39,7 @@ public class OptimalStorageCluster {
 
     @Override
     public String toString() {
-        return "OptimalStorageCluster{" +
+        return "clusterClasses.OptimalStorageCluster{" +
                 "number=" + number +
                 ", storageSize=" + storageSize +
                 ", fullDataSize=" + fullDataSize +

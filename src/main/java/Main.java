@@ -1,7 +1,10 @@
-package newverison;
+import clusterClasses.Cluster;
+import clusterClasses.ClusterList;
+import clusterClasses.OptimalStorageCluster;
+import configClasses.Config;
+import configClasses.ConfigsList;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 public class Main {
@@ -11,8 +14,8 @@ public class Main {
 
     public static void main(String[] args) {
 
-        double acceptableAmountOfData = 2;  //Integer.parseInt(args[0]);
-        double requestPerSecond = 12000;       //Integer.parseInt(args[1]);
+        double acceptableAmountOfData = 8;  //Integer.parseInt(args[0]);
+        double requestPerSecond = 6000;       //Integer.parseInt(args[1]);
         double routerVelocity = 2000;         //Integer.parseInt(args[2]);
         double replicationLevel = 1;          //Integer.parseInt(args[3]);
 
@@ -20,7 +23,7 @@ public class Main {
         int routerNumber = (int) Math.ceil(requestPerSecond/routerVelocity);
 
         // 100% amount of data
-        double dataForStorages = 151;//acceptableAmountOfData/0.8;
+        double dataForStorages = acceptableAmountOfData/0.8;
 
 
 

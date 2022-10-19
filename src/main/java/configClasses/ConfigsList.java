@@ -1,4 +1,4 @@
-package newverison;
+package configClasses;
 
 public class ConfigsList {
 

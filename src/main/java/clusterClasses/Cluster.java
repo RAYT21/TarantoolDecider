@@ -1,13 +1,14 @@
-package newverison;
+package clusterClasses;
 
-import newverison.instances.Nginx;
-import newverison.instances.Router;
-import newverison.instances.Storage;
-import newverison.instances.TarantoolCore;
-import newverison.server.Server;
-import newverison.server.ServerConfig;
-import newverison.server.ServerInfo;
-import newverison.server.ServerInstances;
+import configClasses.Config;
+import instances.Nginx;
+import instances.Router;
+import instances.Storage;
+import instances.TarantoolCore;
+import server.Server;
+import server.ServerConfig;
+import server.ServerInfo;
+import server.ServerInstances;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -47,6 +48,7 @@ public class Cluster {
         this.routersNumber = cluster.getRoutersNumber();
         this.lessStoragesIns = cluster.getLessStoragesIns();
         this.lessRouterIns = cluster.getLessRouterIns();
+        this.fullClusterData = cluster.getFullClusterData();
         this.price = cluster.getPrice();
     }
 
@@ -59,7 +61,6 @@ public class Cluster {
 
     public void createClusterVariation(Config[] configs, int id){
         if(lessStoragesIns > 0){
-
             for (Config cfg: configs) {
                 double tmpRAM = cfg.getRAM();
                 double tmpCORE = cfg.getCORE();
@@ -68,17 +69,11 @@ public class Cluster {
 
                 int storageBoxes = (int)Math.floor((tmpRAM - Nginx.ram - Router.ram - TarantoolCore.ram - 10)/storageSize);
 
-                ServerInfo serverInfo = new ServerInfo(
-                        tmpRAM - Nginx.ram - Router.ram - TarantoolCore.ram - 10 - storageBoxes*storageSize,
-                        tmpCORE - Nginx.core - Router.core - TarantoolCore.core - storageBoxes*1.5,
-                        storageBoxes,
-                        1
-                );
-                serverInfo.setCoreAvailability(true);
-                serverInfo.setNginxAvailability(true);
+
 
                 ServerInstances serverInstances = new ServerInstances();
                 serverInstances.addInstance(new Router(0));
+                this.lessRouterIns--;
 
                 int k = 0;
                 while(lessStoragesIns > 0 && k < storageBoxes){
@@ -87,12 +82,25 @@ public class Cluster {
                     k++;
                 }
 
-                this.addServer(new Server(id, new ServerConfig(cfg), serverInfo, serverInstances));
+                ServerInfo serverInfo = new ServerInfo(
+                        tmpRAM - Nginx.ram - Router.ram - TarantoolCore.ram - 10 - k*storageSize,
+                        tmpCORE - Nginx.core - Router.core - TarantoolCore.core - k*1.5,
+                        storageBoxes,
+                        1
+                );
+                serverInfo.setCoreAvailability(true);
+                serverInfo.setNginxAvailability(true);
 
-                this.lessRouterIns--;
+                this.addServer(new Server(
+                        id,
+                        new ServerConfig(cfg),
+                        serverInfo,
+                        serverInstances
+                ));
+
+
                 this.fullClusterData+=tmpRAM;
                 this.price += tmpPRICE;
-
 
                 for (int i = 0; i < configs.length; i++) {
                     new Cluster(this).createClusterVariation(configs, id+1);
@@ -102,6 +110,7 @@ public class Cluster {
                 this.lessStoragesIns +=k;
                 this.fullClusterData-=tmpRAM;
                 this.price -= tmpPRICE;
+
             }
 
         }
@@ -148,7 +157,7 @@ public class Cluster {
 
     @Override
     public String toString() {
-        return "Cluster{" +
+        return "clusterClasses.Cluster{" +
                 "\n\tservers=" + servers +
                 "\n\tdataForStorages=" + dataForStorages +
                 "\n\tfullClusterData=" + fullClusterData +
