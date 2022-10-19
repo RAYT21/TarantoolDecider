@@ -28,6 +28,8 @@ public class Main {
 
         optimal.optimalSizeForStorage(dataForStorages);
 
+        System.out.println(optimal);
+
 
         Config[] conf = listOfSuitableConfigurations(optimal.getStorageSize());
         for (Config cfg : conf) {

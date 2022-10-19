@@ -25,6 +25,7 @@ public class Cluster {
     private int lessRouterIns;
     private int lessStoragesIns;
 
+
     private double price;
 
     public Cluster(OptimalStorageCluster optimal, int routersNumber) {
@@ -57,7 +58,7 @@ public class Cluster {
 
 
     public void createClusterVariation(Config[] configs, int id){
-        if(lessRouterIns > 0 || lessStoragesIns > 0){
+        if(lessStoragesIns > 0){
 
             for (Config cfg: configs) {
                 double tmpRAM = cfg.getRAM();
@@ -65,8 +66,7 @@ public class Cluster {
                 double tmpPRICE = cfg.getPRICE();
 
 
-                int storageBoxes = (int )Math.floor((tmpRAM - Nginx.ram - Router.ram - TarantoolCore.ram - 10)/storageSize);
-                Nginx.placeOnServer();
+                int storageBoxes = (int)Math.floor((tmpRAM - Nginx.ram - Router.ram - TarantoolCore.ram - 10)/storageSize);
 
                 ServerInfo serverInfo = new ServerInfo(
                         tmpRAM - Nginx.ram - Router.ram - TarantoolCore.ram - 10 - storageBoxes*storageSize,
@@ -79,32 +79,33 @@ public class Cluster {
 
                 ServerInstances serverInstances = new ServerInstances();
                 serverInstances.addInstance(new Router(0));
-                for (int i = 0; i < storageBoxes; i++) {
+
+                int k = 0;
+                while(lessStoragesIns > 0 && k < storageBoxes){
                     serverInstances.addInstance(new Storage(this.storagesNumber-this.lessStoragesIns, storageSize));
                     this.lessStoragesIns--;
+                    k++;
                 }
-
-
-
-
 
                 this.addServer(new Server(id, new ServerConfig(cfg), serverInfo, serverInstances));
 
                 this.lessRouterIns--;
-                this.lessStoragesIns -=storageBoxes;
+                this.fullClusterData+=tmpRAM;
                 this.price += tmpPRICE;
+
 
                 for (int i = 0; i < configs.length; i++) {
                     new Cluster(this).createClusterVariation(configs, id+1);
                 }
+
                 this.lessRouterIns++;
-                this.lessStoragesIns +=storageBoxes;
+                this.lessStoragesIns +=k;
+                this.fullClusterData-=tmpRAM;
                 this.price -= tmpPRICE;
             }
 
         }
         else {
-            //System.out.println(1);
             ClusterList.getInstance().addClusterToList(this);
         }
     }
