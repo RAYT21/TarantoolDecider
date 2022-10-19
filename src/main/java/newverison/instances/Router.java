@@ -3,8 +3,8 @@ package newverison.instances;
 public class Router {
 
     private int id;
-    public final double ram = 0.25;
-    public final double core = 1.5;
+    public static final double ram = 0.25;
+    public static final double core = 1.5;
 
     public Router(int id) {
         this.id = id;
@@ -21,4 +21,6 @@ public class Router {
                 ", core=" + core +
                 '}';
     }
+
+
 }
