@@ -17,6 +17,22 @@ public class Server {
     public Server() {
     }
 
+    public int getId() {
+        return id;
+    }
+
+    public ServerConfig getServerConfig() {
+        return serverConfig;
+    }
+
+    public ServerInfo getServerInfo() {
+        return serverInfo;
+    }
+
+    public ServerInstances getServerInstances() {
+        return serverInstances;
+    }
+
     @Override
     public String toString() {
         return "Server{" +
@@ -27,10 +43,7 @@ public class Server {
                 "\n}";
     }
 
-    public Server distribution(){
 
-        return new Server();
-    }
 
 
 }

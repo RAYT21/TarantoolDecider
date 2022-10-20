@@ -1,10 +1,7 @@
 package clusterClasses;
 
 import configClasses.Config;
-import instances.Nginx;
-import instances.Router;
-import instances.Storage;
-import instances.TarantoolCore;
+import instances.*;
 import server.Server;
 import server.ServerConfig;
 import server.ServerInfo;
@@ -58,6 +55,8 @@ public class Cluster {
         this.servers.add(server);
     }
 
+    public void delServer(Server server) { this.servers.remove(server);}
+
 
     public void createClusterVariation(Config[] configs, int id){
         if(lessStoragesIns > 0){
@@ -68,12 +67,14 @@ public class Cluster {
 
 
                 int storageBoxes = (int)Math.floor((tmpRAM - Nginx.ram - Router.ram - TarantoolCore.ram - 10)/storageSize);
-
-
-
                 ServerInstances serverInstances = new ServerInstances();
-                serverInstances.addInstance(new Router(0));
-                this.lessRouterIns--;
+
+                boolean changed = false;
+                if(this.lessRouterIns > 0) {
+                    serverInstances.addInstance(new Router(this.routersNumber-this.lessRouterIns));
+                    this.lessRouterIns--;
+                    changed = true;
+                }
 
                 int k = 0;
                 while(lessStoragesIns > 0 && k < storageBoxes){
@@ -91,14 +92,14 @@ public class Cluster {
                 serverInfo.setCoreAvailability(true);
                 serverInfo.setNginxAvailability(true);
 
-                this.addServer(new Server(
+                Server server = new Server(
                         id,
                         new ServerConfig(cfg),
                         serverInfo,
                         serverInstances
-                ));
+                );
 
-
+                this.addServer(server);
                 this.fullClusterData+=tmpRAM;
                 this.price += tmpPRICE;
 
@@ -106,7 +107,10 @@ public class Cluster {
                     new Cluster(this).createClusterVariation(configs, id+1);
                 }
 
-                this.lessRouterIns++;
+                this.delServer(server);
+                if (changed){
+                    this.lessRouterIns++;
+                }
                 this.lessStoragesIns +=k;
                 this.fullClusterData-=tmpRAM;
                 this.price -= tmpPRICE;
@@ -115,10 +119,67 @@ public class Cluster {
 
         }
         else {
+            if (lessRouterIns > 0){
+                this.routerImplementation();
+            }
+            etcdImplementation();
             ClusterList.getInstance().addClusterToList(this);
         }
     }
 
+    private void etcdImplementation(){
+        boolean etcdFlag = false;
+        for (Server server: servers) {
+            ServerInfo serverInfo = server.getServerInfo();
+            double tmpRAM = serverInfo.getFreeRAM();
+            double tmpCORE = serverInfo.getFreeProcess();
+            if (tmpCORE >= ETCD.core && tmpRAM >= ETCD.ram){
+               serverInfo.setEtcdAvailability(true);
+               serverInfo.setFreeProcess(tmpCORE - ETCD.core);
+               serverInfo.setFreeRAM(tmpRAM - ETCD.ram);
+               etcdFlag = true;
+               break;
+            }
+        }
+        if (etcdFlag == false){
+            //minimal config for etcd
+            //add etcd to server
+            //add server to list
+        }
+    }
+
+    private void routerImplementation(){
+        boolean flag = true;
+        while(flag){
+            int startRoundRouters = lessRouterIns;
+
+            for (Server server: servers) {
+                if(lessRouterIns == 0) break;
+
+                ServerInfo serverInfo = server.getServerInfo();
+                ServerInstances serverInstances = server.getServerInstances();
+                double tmpRAM = serverInfo.getFreeRAM();
+                double tmpCORE = serverInfo.getFreeProcess();
+                if (tmpCORE >= Router.core && tmpRAM >= Router.ram){
+                    serverInstances.addInstance(new Router(this.routersNumber-this.lessRouterIns));
+                    this.lessRouterIns--;
+                    serverInfo.addRoutersNumber();
+                    serverInfo.setFreeProcess(tmpCORE - Router.core);
+                    serverInfo.setFreeRAM(tmpRAM - Router.ram);
+                }
+            }
+
+            if(startRoundRouters == lessRouterIns){
+                flag = false;
+            }
+        }
+
+        if (lessRouterIns > 0){
+            //minimal config for lessRouters
+            //add routers to server
+            //add server to list
+        }
+    }
     public double getPrice() {
         return price;
     }
@@ -158,7 +219,7 @@ public class Cluster {
     @Override
     public String toString() {
         return "clusterClasses.Cluster{" +
-                "\n\tservers=" + servers +
+                "\n\tservers=\n" + servers +
                 "\n\tdataForStorages=" + dataForStorages +
                 "\n\tfullClusterData=" + fullClusterData +
                 "\n\tstorageSize=" + storageSize +

@@ -14,7 +14,7 @@ public class Main {
 
     public static void main(String[] args) {
 
-        double acceptableAmountOfData = 8;  //Integer.parseInt(args[0]);
+        double acceptableAmountOfData = 80;  //Integer.parseInt(args[0]);
         double requestPerSecond = 6000;       //Integer.parseInt(args[1]);
         double routerVelocity = 2000;         //Integer.parseInt(args[2]);
         double replicationLevel = 1;          //Integer.parseInt(args[3]);

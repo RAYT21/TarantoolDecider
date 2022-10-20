@@ -32,6 +32,10 @@ public class ServerInfo {
         this.freeCore = freeProcess;
     }
 
+    public void addRoutersNumber() {
+        this.routersNumber++;
+    }
+
     public int getStoragesNumber() {
         return storagesNumber;
     }

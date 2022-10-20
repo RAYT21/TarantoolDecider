@@ -26,7 +26,7 @@ public class ServerInstances {
 
     @Override
     public String toString() {
-        return "serverInstances{\n" +
+        return "\nserverInstances{" +
                 "\n\tstorages=" + storages+
                 "\n\trouters=" + routers +
                 "\n}";
