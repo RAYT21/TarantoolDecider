@@ -1,6 +1,7 @@
 package clusterClasses;
 
 import configClasses.Config;
+import configClasses.ConfigsList;
 import instances.*;
 import server.Server;
 import server.ServerConfig;
@@ -66,7 +67,7 @@ public class Cluster {
                 double tmpPRICE = cfg.getPRICE();
 
 
-                int storageBoxes = (int)Math.floor((tmpRAM - Nginx.ram - Router.ram - TarantoolCore.ram - 10)/storageSize);
+                int storageBoxes = (int)Math.floor((tmpRAM - (tmpRAM*0.1 >= 10 ? 10 : tmpRAM*0.1) - Nginx.ram - TarantoolCore.ram)/storageSize);
                 ServerInstances serverInstances = new ServerInstances();
 
                 boolean changed = false;
@@ -84,7 +85,7 @@ public class Cluster {
                 }
 
                 ServerInfo serverInfo = new ServerInfo(
-                        tmpRAM - Nginx.ram - Router.ram - TarantoolCore.ram - 10 - k*storageSize,
+                        tmpRAM - Nginx.ram - Router.ram - TarantoolCore.ram - (tmpRAM*0.1 >= 10 ? 10 : tmpRAM*0.1) - k*storageSize,
                         tmpCORE - Nginx.core - Router.core - TarantoolCore.core - k*1.5,
                         storageBoxes,
                         1

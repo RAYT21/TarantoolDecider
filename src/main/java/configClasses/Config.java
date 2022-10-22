@@ -9,7 +9,7 @@ public class Config {
     public Config(double RAM, double CORE) {
         this.RAM = RAM;
         this.CORE = CORE;
-        this.PRICE = CORE*5.51 + RAM*2.15;
+        this.PRICE = CORE*5.51 + RAM*2.15 + 30*0.24;
     }
 
     public double getRAM() {
