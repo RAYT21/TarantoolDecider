@@ -40,7 +40,7 @@ public class Cluster {
     }
 
     public Cluster(Cluster cluster){
-        this.servers = new ArrayList<>(cluster.getServers());
+        this.servers = pullNewList(cluster.getServers());
         this.storageSize = cluster.getStorageSize();
         this.dataForStorages = cluster.getDataForStorages();
         this.storagesNumber = cluster.getStoragesNumber();
@@ -70,11 +70,12 @@ public class Cluster {
 
     public void createClusterVariation(Config[] configs, int id){
         if(lessStoragesIns > 0){
-            for (Config cfg: configs) {
+            for (int i = 0; i < configs.length; i++) {
+                Config cfg = configs[i];
                 double tmpRAM = cfg.getRAM();
                 double tmpCORE = cfg.getCORE();
 
-                int storageBoxes = (int)Math.floor((tmpRAM - (tmpRAM*0.1 >= 10 ? 10 : tmpRAM*0.1) - Nginx.getRam() - TarantoolCore.getRam())/storageSize);
+                int storageBoxes = (int)Math.floor((tmpRAM - (tmpRAM*0.1 >= 10 ? 10 : tmpRAM*0.1) - Nginx.getRam() - Router.getRam() -TarantoolCore.getRam())/storageSize);
                 ServerInstances serverInstances = new ServerInstances();
 
                 boolean changed = false;
@@ -111,9 +112,12 @@ public class Cluster {
                 this.addServer(server);
                 this.fullClusterData+=tmpRAM;
 
-                for (int i = 0; i < configs.length; i++) {
+                for (int j = 0; j < configs.length; j++) {
                     new Cluster(this).createClusterVariation(configs, id+1);
                 }
+
+
+                // if not last
 
                 this.delServer(server);
                 if (changed){
@@ -121,7 +125,6 @@ public class Cluster {
                 }
                 this.lessStoragesIns +=k;
                 this.fullClusterData-=tmpRAM;
-
             }
 
         }

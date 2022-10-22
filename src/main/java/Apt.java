@@ -11,7 +11,7 @@ import java.util.List;
 import java.util.Map;
 
 
-// ЕТСD учитывается только в определнных сферах (елси не пром) done
+// ЕТСD учитывается только в определнных сферах (елси не пром) done(tol'co nado uznat' v kakih)
 
 // сделать флаг для етсд, который включает надобность его или ненадобность done
 
@@ -26,7 +26,9 @@ import java.util.Map;
 
 // sdelat' vibor luchey configuracii na cled shag, a ne generaciya kagdogo varianta
 
-// razobrat'sa chto proishodit v routerah i pochemu ih tak mnogo
+// razobrat'sa chto proishodit v routerah i pochemu ih tak mnogo done
+
+// refactoring
 
 public class Apt {
     static Map<String, Double> coreDep = new HashMap<>() {{
@@ -38,11 +40,11 @@ public class Apt {
     public void run(String[] args) {
 
         double acceptableAmountOfData = 150;  //Integer.parseInt(args[0]);
-        double requestPerSecond = 16000;      //Integer.parseInt(args[1]);
+        double requestPerSecond = 20000;      //Integer.parseInt(args[1]);
         double routerVelocity = 2000;        //Integer.parseInt(args[2]);
         double replicationLevel = 1;         //Integer.parseInt(args[3]);
-        double percent = 0.67;
-        double coreDepend = 0.5; //coreDep.get(args[4]) != null ? coreDep.get(args[4]) : 1.5;
+        double percent = 0.80;
+        double coreDepend = 1.5; //coreDep.get(args[4]) != null ? coreDep.get(args[4]) : 1.5;
 
         if (true /*list.cont(args[4])*/){
             ETCD.setFlagNeed();
@@ -90,8 +92,8 @@ public class Apt {
         List<Config> list = new ArrayList<>();
 
         for (Config cfg : ConfigsList.CONFIGS) {
-            double tmpRAM = cfg.getRAM() - (cfg.getRAM()*0.1 > 10 ? 10 : cfg.getRAM()*0.1) - Nginx.getRam() - TarantoolCore.getRam();
-            double tmpCore = cfg.getCORE() - TarantoolCore.getCore() - Nginx.getCore();  //core, nginx,
+            double tmpRAM = cfg.getRAM() - (cfg.getRAM()*0.1 > 10 ? 10 : cfg.getRAM()*0.1) - Nginx.getRam() - TarantoolCore.getRam() - Router.getRam();
+            double tmpCore = cfg.getCORE() - TarantoolCore.getCore() - Nginx.getCore() - Router.getCore();  //core, nginx,
             if ( tmpRAM  >= size && tmpCore >= Storage.getCore()){
                 list.add(cfg);
             }
