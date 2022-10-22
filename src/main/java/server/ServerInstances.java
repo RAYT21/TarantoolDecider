@@ -15,6 +15,11 @@ public class ServerInstances {
         this.routers = new ArrayList<>();
     }
 
+    public ServerInstances(ServerInstances serverInstances){
+        this.storages = new ArrayList<>(serverInstances.storages);
+        this.routers = new ArrayList<>(serverInstances.routers);
+    }
+
     public void addInstance(Object instance){
         if(instance instanceof Storage){
             storages.add((Storage) instance);

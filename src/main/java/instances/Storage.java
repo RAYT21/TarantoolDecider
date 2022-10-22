@@ -4,7 +4,7 @@ public class Storage {
 
     private int id;
     private double ram;
-    public final double core = 1.5;
+    private static double core;
 
     public Storage(int id, double ram) {
         this.id = id;
@@ -17,6 +17,14 @@ public class Storage {
 
     public double getRam() {
         return ram;
+    }
+
+    public static double getCore() {
+        return core;
+    }
+
+    public  static void setCore(double core) {
+        Storage.core = core;
     }
 
     @Override

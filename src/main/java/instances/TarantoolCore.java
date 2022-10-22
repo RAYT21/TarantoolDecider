@@ -1,6 +1,18 @@
 package instances;
 
 public class TarantoolCore {
-    public static final double ram = 0.25;
-    public static final double core = 1.5;
+    private static final double ram = 0.25;
+    private static double core;
+
+    public static double getRam(){
+        return ram;
+    }
+
+    public static double getCore() {
+        return core;
+    }
+
+    public static void setCore(double core) {
+        TarantoolCore.core = core;
+    }
 }

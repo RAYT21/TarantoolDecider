@@ -10,6 +10,10 @@ public class ServerConfig {
         this.config = config;
     }
 
+    public ServerConfig(ServerConfig serverConfig){
+        this.config = serverConfig.config;
+    }
+
     public double getServerRam(){
         return config.getRAM();
     }

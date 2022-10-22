@@ -1,10 +1,18 @@
 package instances;
 
 public class Nginx {
-    public static final double ram = 0.25;
-    public static final double core = 1.5;
+    private static final double ram = 0.25;
+    private static double core = 1.5;
 
-    public static void placeOnServer(){
+    public static void setCore(double core) {
+        Nginx.core = core;
+    }
 
+    public static double getRam(){
+        return ram;
+    }
+
+    public static double getCore() {
+        return core;
     }
 }

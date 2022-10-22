@@ -9,11 +9,32 @@ public class ServerInfo {
     private boolean etcdAvailability = false;
     private boolean coreAvailability = false;
 
+    private double hddMemory;
+
     public ServerInfo(double freeRAM, double freeCore, int storagesNumber, int routersNumber) {
         this.freeRAM = freeRAM;
         this.freeCore  = freeCore;
         this.storagesNumber = storagesNumber;
         this.routersNumber = routersNumber;
+    }
+
+    public ServerInfo(ServerInfo serverInfo){
+        this.freeRAM = serverInfo.getFreeRAM();
+        this.freeCore = serverInfo.getFreeProcess();
+        this.storagesNumber = serverInfo.getStoragesNumber();
+        this.routersNumber = serverInfo.getRoutersNumber();
+        this.nginxAvailability = serverInfo.isNginxAvailability();;
+        this.etcdAvailability = serverInfo.isEtcdAvailability();
+        this.coreAvailability = serverInfo.isCoreAvailability();
+        this.hddMemory = serverInfo.getHddMemory();
+    }
+
+    public double getHddMemory() {
+        return hddMemory;
+    }
+
+    public void setHddMemory(double hddMemory) {
+        this.hddMemory = hddMemory;
     }
 
     public double getFreeRAM() {
@@ -48,24 +69,24 @@ public class ServerInfo {
         return nginxAvailability;
     }
 
-    public void setNginxAvailability(boolean nginxAvailability) {
-        this.nginxAvailability = nginxAvailability;
+    public void setNginxAvailability() {
+        this.nginxAvailability = true;
     }
 
     public boolean isEtcdAvailability() {
         return etcdAvailability;
     }
 
-    public void setEtcdAvailability(boolean etcdAvailability) {
-        this.etcdAvailability = etcdAvailability;
+    public void setEtcdAvailability() {
+        this.etcdAvailability = true;
     }
 
     public boolean isCoreAvailability() {
         return coreAvailability;
     }
 
-    public void setCoreAvailability(boolean coreAvailability) {
-        this.coreAvailability = coreAvailability;
+    public void setCoreAvailability() {
+        this.coreAvailability = true;
     }
 
     @Override

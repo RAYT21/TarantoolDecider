@@ -6,11 +6,13 @@ public class Config {
     private final double CORE;
     private final double PRICE;
 
+
     public Config(double RAM, double CORE) {
         this.RAM = RAM;
         this.CORE = CORE;
-        this.PRICE = CORE*5.51 + RAM*2.15 + 30*0.24;
+        this.PRICE = CORE*5.51 + RAM*2.15;
     }
+
 
     public double getRAM() {
         return RAM;

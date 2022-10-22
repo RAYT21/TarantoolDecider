@@ -1,6 +1,29 @@
 package instances;
 
 public class ETCD {
-    public static final double ram = 2;
-    public static final double core = 1.5;
+    private static final double ram = 2;
+    private static double core;
+
+    private static boolean flagNeed = false;
+
+    public static double getRam(){
+        return ram;
+    }
+    public static double getCore() {
+        return core;
+    }
+
+    public static void setCore(double core) {
+        ETCD.core = core;
+    }
+
+    public static void setFlagNeed(){
+        ETCD.flagNeed = flagNeed ? false : true;
+    }
+
+    public static boolean getFlagNeed(){
+        return flagNeed;
+    }
+
+
 }
