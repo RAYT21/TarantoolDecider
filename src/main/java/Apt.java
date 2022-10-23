@@ -36,17 +36,21 @@ public class Apt {
         put("dev",0.5);
     }};
 
+    static List<String> list = new ArrayList<>(){{
+        add("");
+    }};
+
 
     public void run(String[] args) {
 
         double acceptableAmountOfData = 150;  //Integer.parseInt(args[0]);
-        double requestPerSecond = 20000;      //Integer.parseInt(args[1]);
+        double requestPerSecond = 2000;      //Integer.parseInt(args[1]);
         double routerVelocity = 2000;        //Integer.parseInt(args[2]);
         double replicationLevel = 1;         //Integer.parseInt(args[3]);
-        double percent = 0.80;
-        double coreDepend = 1.5; //coreDep.get(args[4]) != null ? coreDep.get(args[4]) : 1.5;
+        double percent = 0.80; // Double.parseDouble(args[4])
+        double coreDepend = 1.5; //coreDep.get(args[4]) != null ? coreDep.get(args[5]) : 1.5;
 
-        if (true /*list.cont(args[4])*/){
+        if (true /*list.cont(args[5])*/){
             ETCD.setFlagNeed();
         }
 
