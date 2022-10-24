@@ -55,7 +55,7 @@ public class Apt {
 
     public void run(String[] args) {
 
-        double acceptableAmountOfData = 130;  //Integer.parseInt(args[0]);
+        double acceptableAmountOfData = 8000;  //Integer.parseInt(args[0]);
         double requestPerSecond = 8000;      //Integer.parseInt(args[1]);
         double routerVelocity = 2000;        //Integer.parseInt(args[2]);
         double replicationLevel = 1;         //Integer.parseInt(args[3]); Может быть его от контура автоматически заполнять?
