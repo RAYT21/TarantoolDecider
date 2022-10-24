@@ -40,6 +40,8 @@ import java.util.Map;
 
 // РЕФАКТОРИНГ!
 
+
+
 public class Apt {
     static Map<String, Double> coreDep = new HashMap<>() {{
         put("prod",1.5);
@@ -56,7 +58,7 @@ public class Apt {
         double acceptableAmountOfData = 130;  //Integer.parseInt(args[0]);
         double requestPerSecond = 8000;      //Integer.parseInt(args[1]);
         double routerVelocity = 2000;        //Integer.parseInt(args[2]);
-        double replicationLevel = 1;         //Integer.parseInt(args[3]);
+        double replicationLevel = 1;         //Integer.parseInt(args[3]); Может быть его от контура автоматически заполнять?
         double percent = 0.80; // Double.parseDouble(args[4])
         double coreDepend = coreDep.get("prod") != null ? coreDep.get("prod") : 1.5;
 
@@ -95,6 +97,11 @@ public class Apt {
         Cluster cluster = ClusterList.getInstance().getClusterList();
 
         System.out.println("Result price: " + cluster.getPrice() +" \nResult cluster: \n" + cluster);
+
+        // проверка на шардирование
+        // если не прошло проверку, заново, но с разделенным на два размером инстенса
+
+        // реплицирование
 
 
     }
