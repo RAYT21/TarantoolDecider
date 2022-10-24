@@ -6,7 +6,10 @@ import java.util.List;
 public class ClusterList {
 
 
-    private List<Cluster> clusterList;
+    // сразу выбирать лучший кластер,а не хранить их всех
+    private Cluster clusterList;
+
+    public static int variation = 0;
 
     private static ClusterList INSTANCE;
 
@@ -15,31 +18,28 @@ public class ClusterList {
     public static ClusterList getInstance() {
         if (INSTANCE == null) {
             INSTANCE = new ClusterList();
-            INSTANCE.clusterList = new ArrayList<>();
         }
         return INSTANCE;
     }
 
     public void addClusterToList(Cluster cluster){
-        this.clusterList.add(cluster);
+        /*System.out.println(variation);*/
+        variation++;
+        if(this.clusterList == null) {
+            this.clusterList = cluster;
+            return;
+        }
+        if (this.clusterList.getPrice() > cluster.getPrice()){
+            this.clusterList = cluster;
+        }
+
     }
 
-    public List<Cluster> getClusterList() {
+    public Cluster getClusterList() {
         return clusterList;
     }
 
-    public Cluster choiceBestCluster(){
-        Cluster result = this.getClusterList().get(0);
-        double minPrice = result.getPrice();
-        for (Cluster cluster : this.getClusterList()) {
-            double tmpPrice = cluster.getPrice();
-            if (tmpPrice <= minPrice){
-                result = cluster;
-                minPrice = tmpPrice;
-            }
-        }
-        return result;
-    }
+
 
 
 }

@@ -11,23 +11,6 @@ import java.util.List;
 import java.util.Map;
 
 
-// ЕТСD учитывается только в определнных сферах (елси не пром) done(tol'co nado uznat' v kakih)
-
-// сделать флаг для етсд, который включает надобность его или ненадобность done
-
-// исправить распределение коров, в оптимальном выборе конфигураций done
-
-// учет размера хдд и стоимости от него done
-
-// учесть в выборе кластера ядра необходимые для размещения основных конфигов done
-
-// change all methods toString
-
-
-// sdelat' vibor luchey configuracii na cled shag, a ne generaciya kagdogo varianta
-
-// razobrat'sa chto proishodit v routerah i pochemu ih tak mnogo done
-
 // refactoring
 
 public class Apt {
@@ -37,20 +20,20 @@ public class Apt {
     }};
 
     static List<String> list = new ArrayList<>(){{
-        add("");
+        add("prod");
     }};
 
 
     public void run(String[] args) {
 
-        double acceptableAmountOfData = 150;  //Integer.parseInt(args[0]);
+        double acceptableAmountOfData = 400;  //Integer.parseInt(args[0]);
         double requestPerSecond = 2000;      //Integer.parseInt(args[1]);
         double routerVelocity = 2000;        //Integer.parseInt(args[2]);
         double replicationLevel = 1;         //Integer.parseInt(args[3]);
         double percent = 0.80; // Double.parseDouble(args[4])
-        double coreDepend = 1.5; //coreDep.get(args[4]) != null ? coreDep.get(args[5]) : 1.5;
+        double coreDepend = coreDep.get("prod") != null ? coreDep.get("prod") : 1.5;
 
-        if (true /*list.cont(args[5])*/){
+        if (list.contains("")){
             ETCD.setFlagNeed();
         }
 
@@ -80,12 +63,17 @@ public class Apt {
 
         Config[] conf = listOfSuitableConfigurations(optimal.getStorageSize());
         for (Config cfg : conf) {
-            new Cluster(optimal,routerNumber).createClusterVariation(conf,0);
+            System.out.printf(cfg+" ");
         }
 
-        Cluster cluster = ClusterList.getInstance().choiceBestCluster();
+        new Cluster(optimal,routerNumber).createClusterVariation(conf,0);
+
+
+        Cluster cluster = ClusterList.getInstance().getClusterList();
 
         System.out.println("Result price: " + cluster.getPrice() +" \nResult cluster: \n" + cluster);
+
+        System.out.println(ClusterList.variation);
 
     }
 

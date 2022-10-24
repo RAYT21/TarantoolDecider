@@ -99,6 +99,7 @@ public class ServerInfo {
                 ", nginxAvailability=" + nginxAvailability +
                 ", etcdAvailability=" + etcdAvailability +
                 ", coreAvailability=" + coreAvailability +
+                ", hddMemory=" + hddMemory +
                 '}';
     }
 }

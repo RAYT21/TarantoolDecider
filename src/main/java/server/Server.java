@@ -51,7 +51,8 @@ public class Server {
                 ram +     //snap
                 (serverInfo.getRoutersNumber() + serverInfo.getStoragesNumber()) + //logs
                 (serverInfo.isEtcdAvailability() ? 5 : 0) + //etcd
-                (serverInfo.isNginxAvailability() ? 5 : 0)  //nginx
+                (serverInfo.isNginxAvailability() ? 5 : 0) + //nginx
+                30  // os
         );
     }
 

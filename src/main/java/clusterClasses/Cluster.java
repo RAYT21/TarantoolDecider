@@ -15,6 +15,8 @@ public class Cluster {
     private List<Server> servers;
 
     private double dataForStorages;
+
+
     private double fullClusterData;
     private static double storageSize;
 
@@ -282,16 +284,16 @@ public class Cluster {
 
     @Override
     public String toString() {
-        return "clusterClasses.Cluster{" +
-                "\n\tservers=\n" + servers +
-                "\n\tdataForStorages=" + dataForStorages +
-                "\n\tfullClusterData=" + fullClusterData +
-                "\n\tstorageSize=" + storageSize +
-                "\n\troutersNumber=" + routersNumber +
-                "\n\tstoragesNumber=" + storagesNumber +
-                "\n\tlessRouterIns=" + lessRouterIns +
-                "\n\tlessStoragesIns=" + lessStoragesIns +
-                "\n\tprice=" + price +
-                "\n}";
+        return "Cluster{" +
+                "servers=" + servers +
+                ", dataForStorages=" + dataForStorages +
+                ", fullClusterData=" + fullClusterData +
+                ", routersNumber=" + routersNumber +
+                ", storagesNumber=" + storagesNumber +
+                ", lessRouterIns=" + lessRouterIns +
+                ", lessStoragesIns=" + lessStoragesIns +
+                ", hddMemory=" + hddMemory +
+                ", price=" + price +
+                '}';
     }
 }

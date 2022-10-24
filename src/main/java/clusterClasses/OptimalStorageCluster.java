@@ -12,7 +12,7 @@ public class OptimalStorageCluster {
         double optimalNumber = Math.ceil(dataForStorages/32.);
         int optimalSize = 32;
 
-        for (int i = 31; i >= 2; i--) {
+        for (int i = 31; i >= 1; i--) {
             double tmp = Math.ceil(dataForStorages/(double)i);
             if (tmp <= optimalNumber){
                 optimalNumber = tmp;
