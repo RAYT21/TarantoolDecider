@@ -13,6 +13,33 @@ import java.util.Map;
 
 // refactoring
 
+// сравнение старого алгаритма с новым(новый метод быстрее в разы,
+// но не факт что лучше, но если настроить шардирование, то сто процентов будет лучше с размещением ЕТСД)
+
+// продумать репликацию
+
+// продумать шардирование
+
+// РЕФАКТОРИНГ БОЖЕ МОЙ
+
+// добавить все существующие конифгурации
+
+// обговорить об размещении ЕТСД (на отдельном сервере или как)
+
+// обговорить про размещение роутеров
+
+// как зависит нагрузка от контуров
+
+// РЕФАКТОРИНГ
+
+// Что еще не учли?*?
+
+// Какой интерфейс будет на странице заказа?
+
+// Может быть включать старый алгоритм когда количетсво инстенсов не превышает определенного значения (10-12)?
+
+// РЕФАКТОРИНГ!
+
 public class Apt {
     static Map<String, Double> coreDep = new HashMap<>() {{
         put("prod",1.5);
@@ -26,14 +53,14 @@ public class Apt {
 
     public void run(String[] args) {
 
-        double acceptableAmountOfData = 400;  //Integer.parseInt(args[0]);
-        double requestPerSecond = 2000;      //Integer.parseInt(args[1]);
+        double acceptableAmountOfData = 130;  //Integer.parseInt(args[0]);
+        double requestPerSecond = 8000;      //Integer.parseInt(args[1]);
         double routerVelocity = 2000;        //Integer.parseInt(args[2]);
         double replicationLevel = 1;         //Integer.parseInt(args[3]);
         double percent = 0.80; // Double.parseDouble(args[4])
         double coreDepend = coreDep.get("prod") != null ? coreDep.get("prod") : 1.5;
 
-        if (list.contains("")){
+        if (list.contains("prod")){
             ETCD.setFlagNeed();
         }
 
@@ -44,15 +71,11 @@ public class Apt {
         Storage.setCore(coreDepend);
         TarantoolCore.setCore(coreDepend);
 
-
-
         //routers
         int routerNumber = (int) Math.ceil(requestPerSecond/routerVelocity);
 
         // 100% amount of data
         double dataForStorages = acceptableAmountOfData/percent;
-
-
 
         OptimalStorageCluster optimal = new OptimalStorageCluster();
 
@@ -73,7 +96,6 @@ public class Apt {
 
         System.out.println("Result price: " + cluster.getPrice() +" \nResult cluster: \n" + cluster);
 
-        System.out.println(ClusterList.variation);
 
     }
 

@@ -72,67 +72,70 @@ public class Cluster {
 
     public void createClusterVariation(Config[] configs, int id){
         if(lessStoragesIns > 0){
-            for (int i = 0; i < configs.length; i++) {
-                Config cfg = configs[i];
-                double tmpRAM = cfg.getRAM();
-                double tmpCORE = cfg.getCORE();
+            Config cfg = configs[0];
+            int maxTmpStorages = (int)Math.floor((cfg.getRAM() - (cfg.getRAM()*0.1 >= 10 ? 10 : cfg.getRAM()*0.1) - Nginx.getRam() - (lessRouterIns > 0 ? Router.getRam() : 0) -TarantoolCore.getRam())/storageSize);
+            for (int i = 1; i < configs.length; i++) {
 
-                double ramLessServer = tmpRAM - (tmpRAM*0.1 >= 10 ? 10 : tmpRAM*0.1) - Nginx.getRam() - (lessRouterIns > 0 ? Router.getRam() : 0) -TarantoolCore.getRam();
-                double coreLessServer = tmpCORE - Nginx.getCore() - (lessRouterIns > 0 ? Router.getCore() : 0) -TarantoolCore.getCore();
-                int storageBoxes = (int)Math.floor(ramLessServer/storageSize);
-                ServerInstances serverInstances = new ServerInstances();
+                double tmpRAM = configs[i].getRAM();
+                double tmpCORE = configs[i].getCORE();
 
-                boolean changed = false;
-                if(this.lessRouterIns > 0) {
-                    serverInstances.addInstance(new Router(this.routersNumber-this.lessRouterIns));
-                    this.lessRouterIns--;
-                    changed = true;
+                int tmpStorages = (int)Math.floor((tmpRAM - (tmpRAM*0.1 >= 10 ? 10 : tmpRAM*0.1) - Nginx.getRam() - (lessRouterIns > 0 ? Router.getRam() : 0) -TarantoolCore.getRam())/storageSize);;
+                double tmpFreeCores = tmpCORE - tmpStorages*Storage.getCore()- Nginx.getCore() - (lessRouterIns > 0 ? Router.getCore() : 0) -TarantoolCore.getCore();
+                int lessStorages = lessStoragesIns - tmpStorages;
+                if(lessStorages > 0 && tmpStorages >= maxTmpStorages && tmpFreeCores >= 0){
+                    cfg = configs[i];
+                    maxTmpStorages = tmpStorages;
+                }
+                if (lessStorages <= 0 && tmpStorages <= maxTmpStorages  && tmpFreeCores >= 0){
+                    cfg = configs[i];
+                    maxTmpStorages = tmpStorages;
                 }
 
-                int k = 0;
-                while(lessStoragesIns > 0 && k < storageBoxes && coreLessServer >= Storage.getCore()){
-                    serverInstances.addInstance(new Storage(this.storagesNumber-this.lessStoragesIns, storageSize));
-                    this.lessStoragesIns--;
-                    coreLessServer-=Storage.getCore();
-                    ramLessServer-=storageSize;
-                k++;
-                }
-
-                ServerInfo serverInfo = new ServerInfo(
-                        ramLessServer,
-                        coreLessServer,
-                        k,
-                        1
-
-                );
-                serverInfo.setCoreAvailability();
-                serverInfo.setNginxAvailability();
-
-                Server server = new Server(
-                        id,
-                        new ServerConfig(cfg),
-                        serverInfo,
-                        serverInstances
-                );
-
-                this.addServer(server);
-                this.fullClusterData+=tmpRAM;
-
-                for (int j = 0; j < configs.length; j++) {
-                    new Cluster(this).createClusterVariation(configs, id+1);
-                }
-
-
-                // if not last
-
-                this.delServer(server);
-                if (changed){
-                    this.lessRouterIns++;
-                }
-                this.lessStoragesIns +=k;
-                this.fullClusterData-=tmpRAM;
             }
 
+            double tmpRAM = cfg.getRAM();
+            double tmpCORE = cfg.getCORE();
+
+            double ramLessServer = tmpRAM - (tmpRAM*0.1 >= 10 ? 10 : tmpRAM*0.1) - Nginx.getRam() - (lessRouterIns > 0 ? Router.getRam() : 0) -TarantoolCore.getRam();
+            double coreLessServer = tmpCORE - Nginx.getCore() - (lessRouterIns > 0 ? Router.getCore() : 0) -TarantoolCore.getCore();
+            int storageBoxes = (int)Math.floor(ramLessServer/storageSize);
+            ServerInstances serverInstances = new ServerInstances();
+
+            if(this.lessRouterIns > 0) {
+                serverInstances.addInstance(new Router(this.routersNumber-this.lessRouterIns));
+                this.lessRouterIns--;
+            }
+
+            int k = 0;
+            while(lessStoragesIns > 0 && k < storageBoxes && coreLessServer >= Storage.getCore()){
+                serverInstances.addInstance(new Storage(this.storagesNumber-this.lessStoragesIns, storageSize));
+                this.lessStoragesIns--;
+                coreLessServer-=Storage.getCore();
+                ramLessServer-=storageSize;
+                k++;
+            }
+
+            ServerInfo serverInfo = new ServerInfo(
+                    ramLessServer,
+                    coreLessServer,
+                    k,
+                    1
+
+            );
+            serverInfo.setCoreAvailability();
+            serverInfo.setNginxAvailability();
+
+            Server server = new Server(
+                    id,
+                    new ServerConfig(cfg),
+                    serverInfo,
+                    serverInstances
+            );
+
+            this.addServer(server);
+            this.fullClusterData+=tmpRAM;
+
+            this.createClusterVariation(configs, id+1);
         }
         else {
             if (lessRouterIns > 0){
