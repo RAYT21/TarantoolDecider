@@ -16,19 +16,22 @@ import java.util.Map;
 // сравнение старого алгаритма с новым(новый метод быстрее в разы,
 // но не факт что лучше, но если настроить шардирование, то сто процентов будет лучше с размещением ЕТСД)
 
-// продумать репликацию
+// продумать репликацию () +
 
-// продумать шардирование
+// продумать шардирование +
 
 // РЕФАКТОРИНГ БОЖЕ МОЙ
 
 // добавить все существующие конифгурации
 
-// обговорить об размещении ЕТСД (на отдельном сервере или как)
+// обговорить об размещении ЕТСД (на отдельном сервере или как) +
+// пром и нт
 
-// обговорить про размещение роутеров
+// обговорить про размещение роутеров (сколько задано, столько и размещать) +
 
 // как зависит нагрузка от контуров
+// пром = 1.5, нт = 1.5,
+// остальные и дев = 1
 
 // РЕФАКТОРИНГ
 
@@ -40,6 +43,10 @@ import java.util.Map;
 
 // РЕФАКТОРИНГ!
 
+
+// в клдастер добавить значение группы
+
+// Создать новый объект ServerHDDSpace
 
 
 public class Apt {
@@ -54,12 +61,11 @@ public class Apt {
 
 
     public void run(String[] args) {
-
-        double acceptableAmountOfData = 8000;  //Integer.parseInt(args[0]);
-        double requestPerSecond = 8000;      //Integer.parseInt(args[1]);
-        double routerVelocity = 2000;        //Integer.parseInt(args[2]);
+        double acceptableAmountOfData = 40;  //Integer.parseInt(args[0]);
+        double requestPerSecond = 2000;      //Integer.parseInt(args[1]);
+        double routerVelocity = 2000;        //Integer.parseInt(args[2]); в зависимости от контура (ентерпрайз 2к, тдк 3-4к)
         double replicationLevel = 1;         //Integer.parseInt(args[3]); Может быть его от контура автоматически заполнять?
-        double percent = 0.80; // Double.parseDouble(args[4])
+        double percent = 0.75; // Double.parseDouble(args[4])
         double coreDepend = coreDep.get("prod") != null ? coreDep.get("prod") : 1.5;
 
         if (list.contains("prod")){
