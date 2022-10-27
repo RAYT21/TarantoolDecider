@@ -28,6 +28,17 @@ public class ClusterList {
         return clusterList;
     }
 
+    public void addClusterToListInRecursivelyMethod(Cluster cluster){
+        if(this.clusterList == null) {
+            this.clusterList = cluster;
+            return;
+        }
+        if (this.clusterList.getPrice() > cluster.getPrice()){
+            this.clusterList = cluster;
+        }
+
+    }
+
 
 
 

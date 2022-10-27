@@ -14,7 +14,7 @@ import java.util.List;
 public class Cluster {
     private List<Server> servers;
 
-    private double dataForStorages;
+    private final double dataForStorages;
 
 
     private double fullClusterData;
@@ -30,7 +30,7 @@ public class Cluster {
     private double hddMemory;
     private double price;
 
-    private int clusterGroup = 0;
+    private int clusterGroup = -1;
 
     public Cluster(OptimalStorageCluster optimal, int routersNumber) {
         this.servers = new ArrayList<>();
@@ -45,7 +45,7 @@ public class Cluster {
 
     public Cluster(Cluster cluster){
         this.servers = pullNewList(cluster.getServers());
-        this.storageSize = cluster.getStorageSize();
+        storageSize = getStorageSize();
         this.dataForStorages = cluster.getDataForStorages();
         this.storagesNumber = cluster.getStoragesNumber();
         this.routersNumber = cluster.getRoutersNumber();
@@ -53,6 +53,7 @@ public class Cluster {
         this.lessRouterIns = cluster.getLessRouterIns();
         this.fullClusterData = cluster.getFullClusterData();
         this.price = cluster.getPrice();
+        this.hddMemory = cluster.getHddMemory();
     }
 
     private List<Server> pullNewList(List<Server> servers){
@@ -63,32 +64,86 @@ public class Cluster {
         return serverList;
     }
 
-
-
     public void addServer(Server server){
         this.servers.add(server);
     }
 
-
+    public void delServer(Server server) {
+        this.servers.remove(server);
+    }
 
     public void createClusterVariationRecursively(Config[] configs, int id){
         if(lessStoragesIns > 0){
+            for (Config cfg : configs) {
+                double tmpRAM = cfg.getRAM();
+                double tmpCORE = cfg.getCORE();
 
-            Config cfg = ConfigsList.nextStepConfig(configs,lessRouterIns,lessStoragesIns,storageSize);
+                double ramLessServer = tmpRAM - (tmpRAM * 0.1 >= 10 ? 10 : tmpRAM * 0.1) - Nginx.getRam() - (lessRouterIns > 0 ? Router.getRam() : 0) - TarantoolCore.getRam();
+                double coreLessServer = tmpCORE - Nginx.getCore() - (lessRouterIns > 0 ? Router.getCore() : 0) - TarantoolCore.getCore();
+                int storageBoxes = (int) Math.floor(ramLessServer / storageSize);
+                ServerInstances serverInstances = new ServerInstances();
 
-            storageImplementationOnNewServer(cfg, id);
+                boolean changed = false;
+                if (this.lessRouterIns > 0) {
+                    serverInstances.addInstance(new Router(this.routersNumber - this.lessRouterIns));
+                    this.lessRouterIns--;
+                    changed = true;
+                }
 
-            this.createClusterVariationRecursively(configs, id+1);
+                int k = 0;
+                while (lessStoragesIns > 0 && k < storageBoxes && coreLessServer >= Storage.getCore()) {
+                    serverInstances.addInstance(new Storage(this.storagesNumber - this.lessStoragesIns, storageSize));
+                    this.lessStoragesIns--;
+                    coreLessServer -= Storage.getCore();
+                    ramLessServer -= storageSize;
+                    k++;
+                }
+
+                ServerInfo serverInfo = new ServerInfo(
+                        ramLessServer,
+                        coreLessServer,
+                        k,
+                        1
+
+                );
+                serverInfo.setCoreAvailability();
+                serverInfo.setNginxAvailability();
+
+                Server server = new Server(
+                        id,
+                        new ServerConfig(cfg),
+                        serverInfo,
+                        serverInstances
+                );
+
+                this.addServer(server);
+                this.fullClusterData += tmpRAM;
+
+                for (int j = 0; j < configs.length; j++) {
+                    new Cluster(this).createClusterVariationRecursively(configs, id + 1);
+                }
+
+
+                // if not last
+
+                this.delServer(server);
+                if (changed) {
+                    this.lessRouterIns++;
+                }
+                this.lessStoragesIns += k;
+                this.fullClusterData -= tmpRAM;
+            }
         }
         else {
             if (lessRouterIns > 0){
                 this.routerImplementation();
             }
             if(ETCD.getFlagNeed()) {
-                etcdImplementation(id);
+                etcdImplementation();
+                ETCD.setFlagNeed(true);
             }
             setPrice();
-            ClusterList.getInstance().addClusterToList(this);
+            ClusterList.getInstance().addClusterToListInRecursivelyMethod(this);
         }
     }
 
@@ -106,7 +161,7 @@ public class Cluster {
                 this.routerImplementation();
             }
             if(ETCD.getFlagNeed()) {
-                etcdImplementation(id);
+                etcdImplementation();
             }
             setPrice();
             ClusterList.getInstance().addClusterToList(this);
@@ -145,6 +200,7 @@ public class Cluster {
 
         this.addServer(server);
         this.fullClusterData+=tmpRAM;
+
     }
 
 
@@ -161,7 +217,7 @@ public class Cluster {
         }
     }
 
-    private void etcdImplementation(int id){
+    private void etcdImplementation(){
         findServerForETCD();
         if (ETCD.getFlagNeed()){
             addServer(createServerForETCD());
@@ -176,7 +232,7 @@ public class Cluster {
                 server.getServerInfo().setEtcdAvailability();
                 server.getServerInfo().setFreeProcess(tmpCORE - ETCD.getCore());
                 server.getServerInfo().setFreeRAM(tmpRAM - ETCD.getRam());
-                ETCD.setFlagNeed();
+                ETCD.setFlagNeed(false);
                 break;
             }
         }
@@ -257,6 +313,7 @@ public class Cluster {
 
 
 
+
     public double getPrice() {
         return price;
     }
@@ -293,18 +350,35 @@ public class Cluster {
         return lessStoragesIns;
     }
 
+    public double getHddMemory() {
+        return hddMemory;
+    }
+
+    public void setHddMemory(double hddMemory) {
+        this.hddMemory = hddMemory;
+    }
+
+    public int getClusterGroup() {
+        return clusterGroup;
+    }
+
+    public void setClusterGroup(int clusterGroup) {
+        this.clusterGroup = clusterGroup;
+    }
+
     @Override
     public String toString() {
-        return "Cluster{" +
-                "servers=" + servers +
-                ", dataForStorages=" + dataForStorages +
-                ", fullClusterData=" + fullClusterData +
-                ", routersNumber=" + routersNumber +
-                ", storagesNumber=" + storagesNumber +
-                ", lessRouterIns=" + lessRouterIns +
-                ", lessStoragesIns=" + lessStoragesIns +
-                ", hddMemory=" + hddMemory +
-                ", price=" + price +
-                '}';
+        return "\nCluster{" +
+                "\n\tgroupID=" + clusterGroup +
+                "\n\tservers=" + servers +
+                "\n\tdataForStorages=" + dataForStorages +
+                "\n\tfullClusterData=" + fullClusterData +
+                "\n\troutersNumber=" + routersNumber +
+                "\n\tstoragesNumber=" + storagesNumber +
+                "\n\tlessRouterIns=" + lessRouterIns +
+                "\n\tlessStoragesIns=" + lessStoragesIns +
+                "\n\thddMemory=" + hddMemory +
+                "\n\tprice=" + price +
+                "\n}\n";
     }
 }

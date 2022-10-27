@@ -17,8 +17,8 @@ public class ETCD {
         ETCD.core = core;
     }
 
-    public static void setFlagNeed(){
-        ETCD.flagNeed = flagNeed ? false : true;
+    public static void setFlagNeed(boolean flagNeed){
+        ETCD.flagNeed = flagNeed;
     }
 
     public static boolean getFlagNeed(){

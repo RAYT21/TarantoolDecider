@@ -8,7 +8,6 @@ public class Server {
     private ServerConfig serverConfig;
     private ServerInfo serverInfo;
     private ServerInstances serverInstances;
-
     private double price;
 
     public Server(int id, ServerConfig serverConfig, ServerInfo serverInfo, ServerInstances serverInstances) {
@@ -16,7 +15,6 @@ public class Server {
         this.serverConfig = serverConfig;
         this.serverInfo = serverInfo;
         this.serverInstances = serverInstances;
-
         this.price = serverConfig.getServerPrice();
     }
 
@@ -29,11 +27,15 @@ public class Server {
         this.serverConfig = new ServerConfig(server.serverConfig);
         this.serverInfo = new ServerInfo(server.getServerInfo());
         this.serverInstances = new ServerInstances(server.getServerInstances());
-        this.price = server.getServerConfig().getServerPrice();
+        this.price = server.getPrice();
     }
 
     public int getId() {
         return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
     }
 
     public void addHddCost(){
@@ -62,11 +64,12 @@ public class Server {
 
     @Override
     public String toString() {
-        return "Server{" +
+        return "\n\tServer{" +
                 "\n\tid=" + id +
                 "\n\tserverConfig=" + serverConfig +
                 "\n\tserverInfo=" + serverInfo +
                 "\n\tserverInstances=" + serverInstances +
+                "\n\tserverPriceWithHdd=" + price +
                 "\n}";
     }
 

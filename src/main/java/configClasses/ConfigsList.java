@@ -57,14 +57,17 @@ public class ConfigsList {
 
     public static Config nextStepConfig(Config[] configs,int lessRouterIns, int lessStoragesIns, double storageSize){
         Config cfg = configs[0];
-        int maxTmpStorages = (int)Math.floor((cfg.getRAM() - (cfg.getRAM()*0.1 >= 10 ? 10 : cfg.getRAM()*0.1) - Nginx.getRam() - (lessRouterIns > 0 ? Router.getRam() : 0) - TarantoolCore.getRam())/storageSize);
+        int maxTmpStorages = (int)Math.floor((cfg.getRAM() - (cfg.getRAM()*0.1 >= 10 ? 10 : cfg.getRAM()*0.1) -
+                Nginx.getRam() - (lessRouterIns > 0 ? Router.getRam() : 0) - TarantoolCore.getRam())/storageSize);
         for (int i = 1; i < configs.length; i++) {
 
             double tmpRAM = configs[i].getRAM();
             double tmpCORE = configs[i].getCORE();
 
-            int tmpStorages = (int)Math.floor((tmpRAM - (tmpRAM*0.1 >= 10 ? 10 : tmpRAM*0.1) - Nginx.getRam() - (lessRouterIns > 0 ? Router.getRam() : 0) -TarantoolCore.getRam())/storageSize);
-            double tmpFreeCores = tmpCORE - tmpStorages* Storage.getCore()- Nginx.getCore() - (lessRouterIns > 0 ? Router.getCore() : 0) -TarantoolCore.getCore();
+            int tmpStorages = (int)Math.floor((tmpRAM - (tmpRAM*0.1 >= 10 ? 10 : tmpRAM*0.1) - Nginx.getRam()
+                    - (lessRouterIns > 0 ? Router.getRam() : 0) -TarantoolCore.getRam())/storageSize);
+            double tmpFreeCores = tmpCORE - tmpStorages* Storage.getCore()- Nginx.getCore()
+                    - (lessRouterIns > 0 ? Router.getCore() : 0) -TarantoolCore.getCore();
             int lessStorages = lessStoragesIns - tmpStorages;
             if(lessStorages > 0 && tmpStorages >= maxTmpStorages && tmpFreeCores >= 0){
                 cfg = configs[i];

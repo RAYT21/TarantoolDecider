@@ -1,6 +1,7 @@
 import clusterClasses.Cluster;
 import clusterClasses.ClusterList;
 import clusterClasses.OptimalStorageCluster;
+import clusterClasses.ReplicationCluster;
 import configClasses.Config;
 import configClasses.ConfigsList;
 import instances.*;
@@ -51,26 +52,23 @@ import java.util.Map;
 
 
 public class Apt {
-    static Map<String, Double> coreDep = new HashMap<>() {{
-        put("prod",1.5);
-        put("dev",0.5);
-    }};
-
     static List<String> list = new ArrayList<>(){{
         add("prod");
+        add("nt");
     }};
+
 
 
     public void run(String[] args) {
-        double acceptableAmountOfData = 40;  //Integer.parseInt(args[0]);
+        double acceptableAmountOfData = 200;  //Integer.parseInt(args[0]);
         double requestPerSecond = 2000;      //Integer.parseInt(args[1]);
         double routerVelocity = 2000;        //Integer.parseInt(args[2]); в зависимости от контура (ентерпрайз 2к, тдк 3-4к)
-        double replicationLevel = 1;         //Integer.parseInt(args[3]); Может быть его от контура автоматически заполнять?
+        int replicationLevel = 4;         //Integer.parseInt(args[3]); Может быть его от контура автоматически заполнять?
         double percent = 0.75; // Double.parseDouble(args[4])
-        double coreDepend = coreDep.get("prod") != null ? coreDep.get("prod") : 1.5;
+        double coreDepend = list.contains("prod")  ? 1.5 : 1;
 
         if (list.contains("prod")){
-            ETCD.setFlagNeed();
+            ETCD.setFlagNeed(true);
         }
 
         // init core
@@ -100,12 +98,7 @@ public class Apt {
 
         cluster = ClusterList.getInstance().getClusterList();
 
-        System.out.println("Result price: " + cluster.getPrice() +" \nResult cluster: \n" + cluster);
-
-        // проверка на шардирование
-        // если не прошло проверку, заново, но с разделенным на два размером инстенса
-
-        // реплицирование
+        System.out.println(new ReplicationCluster(cluster,replicationLevel));
 
 
     }
