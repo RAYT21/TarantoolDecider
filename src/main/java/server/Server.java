@@ -22,7 +22,7 @@ public class Server {
 
     }
 
-    public Server(Server server){
+    public Server(Server server) {
         this.id = server.getId();
         this.serverConfig = new ServerConfig(server.serverConfig);
         this.serverInfo = new ServerInfo(server.getServerInfo());
@@ -38,7 +38,7 @@ public class Server {
         this.id = id;
     }
 
-    public void addHddCost(){
+    public void addHddCost() {
         this.price += serverInfo.getHddMemory().getFullMemo() * 0.24;
     }
 
@@ -46,7 +46,7 @@ public class Server {
         return price;
     }
 
-    public void hddSpace(){
+    public void hddSpace() {
         serverInfo.setHddMemory(new ServerHDDSpace(this.getServerInfo()));
     }
 
@@ -72,8 +72,6 @@ public class Server {
                 "\n\tserverPriceWithHdd=" + price +
                 "\n}";
     }
-
-
 
 
 }

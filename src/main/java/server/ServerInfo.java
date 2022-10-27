@@ -13,17 +13,17 @@ public class ServerInfo {
 
     public ServerInfo(double freeRAM, double freeCore, int storagesNumber, int routersNumber) {
         this.freeRAM = freeRAM;
-        this.freeCore  = freeCore;
+        this.freeCore = freeCore;
         this.storagesNumber = storagesNumber;
         this.routersNumber = routersNumber;
     }
 
-    public ServerInfo(ServerInfo serverInfo){
+    public ServerInfo(ServerInfo serverInfo) {
         this.freeRAM = serverInfo.getFreeRAM();
         this.freeCore = serverInfo.getFreeProcess();
         this.storagesNumber = serverInfo.getStoragesNumber();
         this.routersNumber = serverInfo.getRoutersNumber();
-        this.nginxAvailability = serverInfo.isNginxAvailability();;
+        this.nginxAvailability = serverInfo.isNginxAvailability();
         this.etcdAvailability = serverInfo.isEtcdAvailability();
         this.coreAvailability = serverInfo.isCoreAvailability();
         this.hddMemory = serverInfo.getHddMemory();

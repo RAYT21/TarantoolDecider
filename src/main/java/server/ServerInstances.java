@@ -15,16 +15,16 @@ public class ServerInstances {
         this.routers = new ArrayList<>();
     }
 
-    public ServerInstances(ServerInstances serverInstances){
+    public ServerInstances(ServerInstances serverInstances) {
         this.storages = new ArrayList<>(serverInstances.storages);
         this.routers = new ArrayList<>(serverInstances.routers);
     }
 
-    public void addInstance(Object instance){
-        if(instance instanceof Storage){
+    public void addInstance(Object instance) {
+        if (instance instanceof Storage) {
             storages.add((Storage) instance);
         }
-        if(instance instanceof Router){
+        if (instance instanceof Router) {
             routers.add((Router) instance);
         }
     }
@@ -32,7 +32,7 @@ public class ServerInstances {
     @Override
     public String toString() {
         return "\n\tserverInstances{" +
-                "\n\tstorages=" + storages+
+                "\n\tstorages=" + storages +
                 "\n\trouters=" + routers +
                 "\n\t}";
     }

@@ -7,20 +7,20 @@ public class OptimalStorageCluster {
     private double fullDataSize;
 
 
-    public void optimalSizeForStorage(double dataForStorages){
+    public void optimalSizeForStorage(double dataForStorages) {
 
-        double optimalNumber = Math.ceil(dataForStorages/32.);
+        double optimalNumber = Math.ceil(dataForStorages / 32.);
         int optimalSize = 32;
 
         for (int i = 31; i >= 1; i--) {
-            double tmp = Math.ceil(dataForStorages/(double)i);
-            if (tmp <= optimalNumber){
+            double tmp = Math.ceil(dataForStorages / (double) i);
+            if (tmp <= optimalNumber) {
                 optimalNumber = tmp;
                 optimalSize = i;
             }
         }
 
-        this.number = (int)optimalNumber;
+        this.number = (int) optimalNumber;
         this.storageSize = optimalSize;
         this.fullDataSize = dataForStorages;
     }

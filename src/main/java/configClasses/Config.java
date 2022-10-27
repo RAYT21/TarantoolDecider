@@ -7,10 +7,10 @@ public class Config {
     private final double PRICE;
 
 
-    public Config(double RAM, double CORE) {
+    public Config(double CORE, double RAM) {
         this.RAM = RAM;
         this.CORE = CORE;
-        this.PRICE = CORE*5.51 + RAM*2.15;
+        this.PRICE = CORE * 5.51 + RAM * 2.15;
     }
 
 

@@ -9,7 +9,7 @@ public class ReplicationCluster {
 
     private List<Cluster> replCluster = new ArrayList<>();
 
-    private double fullPrice =0;
+    private double fullPrice = 0;
 
     public ReplicationCluster(Cluster tooper, int replicationLevel) {
         for (int i = 0; i < replicationLevel; i++) {
@@ -20,8 +20,12 @@ public class ReplicationCluster {
                 server.setId(server.getId() + i * k);
             }
             replCluster.add(cluster);
-            fullPrice+=cluster.getPrice();
+            fullPrice += cluster.getPrice();
         }
+        Cluster tmpETCD = new Cluster();
+        replCluster.add(tmpETCD);
+        fullPrice += tmpETCD.getPrice();
+
     }
 
     public List<Cluster> getReplCluster() {

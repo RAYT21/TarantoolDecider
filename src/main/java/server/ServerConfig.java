@@ -10,24 +10,24 @@ public class ServerConfig {
         this.config = config;
     }
 
-    public ServerConfig(ServerConfig serverConfig){
+    public ServerConfig(ServerConfig serverConfig) {
         this.config = serverConfig.config;
     }
 
-    public double getServerRam(){
+    public double getServerRam() {
         return config.getRAM();
     }
 
-    public double getServerCore(){
+    public double getServerCore() {
         return config.getCORE();
     }
 
-    public double getServerPrice(){
+    public double getServerPrice() {
         return config.getPRICE();
     }
 
     @Override
     public String toString() {
-        return "Server"+config;
+        return "Server" + config;
     }
 }

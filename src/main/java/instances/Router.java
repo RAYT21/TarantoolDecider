@@ -14,7 +14,7 @@ public class Router {
         return id;
     }
 
-    public static double getRam(){
+    public static double getRam() {
         return ram;
     }
 

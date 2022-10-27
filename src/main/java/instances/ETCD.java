@@ -6,9 +6,10 @@ public class ETCD {
 
     private static boolean flagNeed = false;
 
-    public static double getRam(){
+    public static double getRam() {
         return ram;
     }
+
     public static double getCore() {
         return core;
     }
@@ -17,11 +18,11 @@ public class ETCD {
         ETCD.core = core;
     }
 
-    public static void setFlagNeed(boolean flagNeed){
+    public static void setFlagNeed(boolean flagNeed) {
         ETCD.flagNeed = flagNeed;
     }
 
-    public static boolean getFlagNeed(){
+    public static boolean getFlagNeed() {
         return flagNeed;
     }
 

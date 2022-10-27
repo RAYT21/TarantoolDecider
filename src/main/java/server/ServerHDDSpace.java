@@ -17,7 +17,7 @@ public class ServerHDDSpace {
     public ServerHDDSpace(ServerInfo serverInfo) {
         double ram = serverInfo.getStoragesNumber() * Cluster.getStorageSize() +
                 serverInfo.getRoutersNumber();
-        this.tarantool = ram*0.4;
+        this.tarantool = ram * 0.4;
         this.snap = ram;
         this.logs = (serverInfo.getRoutersNumber() + serverInfo.getStoragesNumber());
         this.etcd = (serverInfo.isEtcdAvailability() ? 5 : 0);

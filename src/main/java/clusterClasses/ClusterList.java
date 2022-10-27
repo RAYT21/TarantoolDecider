@@ -11,7 +11,8 @@ public class ClusterList {
 
     private static ClusterList INSTANCE;
 
-    private ClusterList() {}
+    private ClusterList() {
+    }
 
     public static ClusterList getInstance() {
         if (INSTANCE == null) {
@@ -20,7 +21,7 @@ public class ClusterList {
         return INSTANCE;
     }
 
-    public void addClusterToList(Cluster cluster){
+    public void addClusterToList(Cluster cluster) {
         this.clusterList = cluster;
     }
 
@@ -28,18 +29,16 @@ public class ClusterList {
         return clusterList;
     }
 
-    public void addClusterToListInRecursivelyMethod(Cluster cluster){
-        if(this.clusterList == null) {
+    public void addClusterToListInRecursivelyMethod(Cluster cluster) {
+        if (this.clusterList == null) {
             this.clusterList = cluster;
             return;
         }
-        if (this.clusterList.getPrice() > cluster.getPrice()){
+        if (this.clusterList.getPrice() > cluster.getPrice()) {
             this.clusterList = cluster;
         }
 
     }
-
-
 
 
 }

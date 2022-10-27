@@ -34,16 +34,16 @@ public class Cluster {
 
     public Cluster(OptimalStorageCluster optimal, int routersNumber) {
         this.servers = new ArrayList<>();
-        this.storageSize = optimal.getStorageSize();
+        storageSize = optimal.getStorageSize();
         this.dataForStorages = optimal.getFullDataSize();
         this.storagesNumber = optimal.getNumber();
         this.routersNumber = routersNumber;
         this.lessStoragesIns = this.storagesNumber;
         this.lessRouterIns = this.routersNumber;
-        this.price =0;
+        this.price = 0;
     }
 
-    public Cluster(Cluster cluster){
+    public Cluster(Cluster cluster) {
         this.servers = pullNewList(cluster.getServers());
         storageSize = getStorageSize();
         this.dataForStorages = cluster.getDataForStorages();
@@ -56,15 +56,26 @@ public class Cluster {
         this.hddMemory = cluster.getHddMemory();
     }
 
-    private List<Server> pullNewList(List<Server> servers){
+    public Cluster() {
+        this.servers = new ArrayList<>();
+        this.dataForStorages = 0;
+        this.routersNumber = 0;
+        this.storagesNumber = 0;
+        Server server = createServerForETCD();
+        server.setId(-1);
+        addServer(server);
+        setPrice();
+    }
+
+    private List<Server> pullNewList(List<Server> servers) {
         List<Server> serverList = new ArrayList<>();
-        for (Server server: servers) {
+        for (Server server : servers) {
             serverList.add(new Server(server));
         }
         return serverList;
     }
 
-    public void addServer(Server server){
+    public void addServer(Server server) {
         this.servers.add(server);
     }
 
@@ -72,8 +83,8 @@ public class Cluster {
         this.servers.remove(server);
     }
 
-    public void createClusterVariationRecursively(Config[] configs, int id){
-        if(lessStoragesIns > 0){
+    public void createClusterVariationRecursively(Config[] configs, int id) {
+        if (lessStoragesIns > 0) {
             for (Config cfg : configs) {
                 double tmpRAM = cfg.getRAM();
                 double tmpCORE = cfg.getCORE();
@@ -133,12 +144,11 @@ public class Cluster {
                 this.lessStoragesIns += k;
                 this.fullClusterData -= tmpRAM;
             }
-        }
-        else {
-            if (lessRouterIns > 0){
+        } else {
+            if (lessRouterIns > 0) {
                 this.routerImplementation();
             }
-            if(ETCD.getFlagNeed()) {
+            if (ETCD.getFlagNeed()) {
                 etcdImplementation();
                 ETCD.setFlagNeed(true);
             }
@@ -147,20 +157,19 @@ public class Cluster {
         }
     }
 
-    public void createClusterVariationWithNextStepMethod(Config[] configs, int id){
-        if(lessStoragesIns > 0){
+    public void createClusterVariationWithNextStepMethod(Config[] configs, int id) {
+        if (lessStoragesIns > 0) {
 
-            Config cfg = ConfigsList.nextStepConfig(configs,lessRouterIns,lessStoragesIns,storageSize);
+            Config cfg = ConfigsList.nextStepConfig(configs, lessRouterIns, lessStoragesIns, storageSize);
 
             storageImplementationOnNewServer(cfg, id);
 
-            this.createClusterVariationWithNextStepMethod(configs, id+1);
-        }
-        else {
-            if (lessRouterIns > 0){
+            this.createClusterVariationWithNextStepMethod(configs, id + 1);
+        } else {
+            if (lessRouterIns > 0) {
                 this.routerImplementation();
             }
-            if(ETCD.getFlagNeed()) {
+            if (ETCD.getFlagNeed()) {
                 etcdImplementation();
             }
             setPrice();
@@ -168,26 +177,26 @@ public class Cluster {
         }
     }
 
-    private void storageImplementationOnNewServer(Config cfg, int id){
+    private void storageImplementationOnNewServer(Config cfg, int id) {
         double tmpRAM = cfg.getRAM();
         double tmpCORE = cfg.getCORE();
 
-        double ramLessServer = tmpRAM - (tmpRAM*0.1 >= 10 ? 10 : tmpRAM*0.1) - Nginx.getRam() - (lessRouterIns > 0 ? Router.getRam() : 0) -TarantoolCore.getRam();
-        double coreLessServer = tmpCORE - Nginx.getCore() - (lessRouterIns > 0 ? Router.getCore() : 0) -TarantoolCore.getCore();
-        int storageBoxes = (int)Math.floor(ramLessServer/storageSize);
+        double ramLessServer = tmpRAM - (tmpRAM * 0.1 >= 10 ? 10 : tmpRAM * 0.1) - Nginx.getRam() - (lessRouterIns > 0 ? Router.getRam() : 0) - TarantoolCore.getRam();
+        double coreLessServer = tmpCORE - Nginx.getCore() - (lessRouterIns > 0 ? Router.getCore() : 0) - TarantoolCore.getCore();
+        int storageBoxes = (int) Math.floor(ramLessServer / storageSize);
         ServerInstances serverInstances = new ServerInstances();
 
-        if(this.lessRouterIns > 0) {
-            serverInstances.addInstance(new Router(this.routersNumber-this.lessRouterIns));
+        if (this.lessRouterIns > 0) {
+            serverInstances.addInstance(new Router(this.routersNumber - this.lessRouterIns));
             this.lessRouterIns--;
         }
 
         int k = 0;
-        while(lessStoragesIns > 0 && k < storageBoxes && coreLessServer >= Storage.getCore()){
-            serverInstances.addInstance(new Storage(this.storagesNumber-this.lessStoragesIns, storageSize));
+        while (lessStoragesIns > 0 && k < storageBoxes && coreLessServer >= Storage.getCore()) {
+            serverInstances.addInstance(new Storage(this.storagesNumber - this.lessStoragesIns, storageSize));
             this.lessStoragesIns--;
-            coreLessServer-=Storage.getCore();
-            ramLessServer-=storageSize;
+            coreLessServer -= Storage.getCore();
+            ramLessServer -= storageSize;
             k++;
         }
 
@@ -199,7 +208,7 @@ public class Cluster {
         Server server = new Server(id, new ServerConfig(cfg), serverInfo, serverInstances);
 
         this.addServer(server);
-        this.fullClusterData+=tmpRAM;
+        this.fullClusterData += tmpRAM;
 
     }
 
@@ -211,24 +220,24 @@ public class Cluster {
     }
 
     private void setPrice() {
-        for (Server server: servers) {
+        for (Server server : servers) {
             setHddMemory(server);
-            this.price+=server.getPrice();
+            this.price += server.getPrice();
         }
     }
 
-    private void etcdImplementation(){
+    private void etcdImplementation() {
         findServerForETCD();
-        if (ETCD.getFlagNeed()){
+        if (ETCD.getFlagNeed()) {
             addServer(createServerForETCD());
         }
     }
 
-    private void findServerForETCD(){
-        for (Server server: servers) {
+    private void findServerForETCD() {
+        for (Server server : servers) {
             double tmpRAM = server.getServerInfo().getFreeRAM();
             double tmpCORE = server.getServerInfo().getFreeProcess();
-            if (tmpCORE >= ETCD.getCore() && tmpRAM >= ETCD.getRam()){
+            if (tmpCORE >= ETCD.getCore() && tmpRAM >= ETCD.getRam()) {
                 server.getServerInfo().setEtcdAvailability();
                 server.getServerInfo().setFreeProcess(tmpCORE - ETCD.getCore());
                 server.getServerInfo().setFreeRAM(tmpRAM - ETCD.getRam());
@@ -238,11 +247,11 @@ public class Cluster {
         }
     }
 
-    private Server createServerForETCD(){
-        Config config = ConfigsList.findBestServerForLessInstances(ETCD.getRam(),ETCD.getCore());
+    private Server createServerForETCD() {
+        Config config = ConfigsList.findBestServerForLessInstances(ETCD.getRam(), ETCD.getCore());
 
         ServerInfo serverInfo = new ServerInfo(
-                config.getRAM() - Nginx.getRam() - (config.getRAM()*0.1 >= 10 ? 10 : config.getRAM()*0.1) ,
+                config.getRAM() - Nginx.getRam() - (config.getRAM() * 0.1 >= 10 ? 10 : config.getRAM() * 0.1),
                 config.getCORE() - Nginx.getCore(),
                 0,
                 0
@@ -253,41 +262,41 @@ public class Cluster {
         return new Server(servers.size(), new ServerConfig(config), serverInfo, new ServerInstances());
     }
 
-    private void routerImplementation(){
+    private void routerImplementation() {
         findServersForLessRouters();
-        if (lessRouterIns > 0){
+        if (lessRouterIns > 0) {
             serverForRouters();
         }
     }
 
-    private void findServersForLessRouters(){
-        while(this.lessRouterIns > 0){
+    private void findServersForLessRouters() {
+        while (this.lessRouterIns > 0) {
             int startRoundRouters = this.lessRouterIns;
 
-            for (Server server: this.servers) {
+            for (Server server : this.servers) {
                 double tmpRAM = server.getServerInfo().getFreeRAM();
                 double tmpCORE = server.getServerInfo().getFreeProcess();
-                if (tmpCORE >= Router.getCore() && tmpRAM >= Router.getRam()){
-                    server.getServerInstances().addInstance(new Router(this.routersNumber-this.lessRouterIns));
+                if (tmpCORE >= Router.getCore() && tmpRAM >= Router.getRam()) {
+                    server.getServerInstances().addInstance(new Router(this.routersNumber - this.lessRouterIns));
                     this.lessRouterIns--;
                     server.getServerInfo().addRoutersNumber();
                     server.getServerInfo().setFreeProcess(tmpCORE - Router.getCore());
                     server.getServerInfo().setFreeRAM(tmpRAM - Router.getRam());
                 }
-                if(this.lessRouterIns == 0) return;
+                if (this.lessRouterIns == 0) return;
             }
 
-            if(startRoundRouters == this.lessRouterIns){
+            if (startRoundRouters == this.lessRouterIns) {
                 break;
             }
         }
     }
 
-    private void serverForRouters(){
-        Config config = ConfigsList.findBestServerForLessInstances(Router.getRam()*lessRouterIns,Router.getCore()*(lessRouterIns+1));
+    private void serverForRouters() {
+        Config config = ConfigsList.findBestServerForLessInstances(Router.getRam() * lessRouterIns, Router.getCore() * (lessRouterIns + 1));
         ServerInfo serverInfo = new ServerInfo(
-                config.getRAM() -  Nginx.getRam() - (config.getRAM()*0.1 >= 10 ? 10 : config.getRAM()*0.1)  - lessRouterIns*Router.getRam(),
-                config.getCORE() - Nginx.getCore() - lessRouterIns*Router.getCore(),
+                config.getRAM() - Nginx.getRam() - (config.getRAM() * 0.1 >= 10 ? 10 : config.getRAM() * 0.1) - lessRouterIns * Router.getRam(),
+                config.getCORE() - Nginx.getCore() - lessRouterIns * Router.getCore(),
                 0,
                 lessRouterIns
 
@@ -297,21 +306,12 @@ public class Cluster {
 
         ServerInstances serverInstances = new ServerInstances();
         for (int i = 0; i < lessRouterIns; i++) {
-            serverInstances.addInstance(new Router(routersNumber-lessRouterIns));
+            serverInstances.addInstance(new Router(routersNumber - lessRouterIns));
         }
 
         Server server = new Server(servers.size(), new ServerConfig(config), serverInfo, serverInstances);
         this.addServer(server);
     }
-
-
-
-
-
-
-
-
-
 
 
     public double getPrice() {

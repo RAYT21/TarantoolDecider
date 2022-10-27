@@ -23,7 +23,7 @@ public class Storage {
         return core;
     }
 
-    public  static void setCore(double core) {
+    public static void setCore(double core) {
         Storage.core = core;
     }
 

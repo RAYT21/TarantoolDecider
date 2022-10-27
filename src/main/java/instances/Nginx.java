@@ -8,7 +8,7 @@ public class Nginx {
         Nginx.core = core;
     }
 
-    public static double getRam(){
+    public static double getRam() {
         return ram;
     }
 
