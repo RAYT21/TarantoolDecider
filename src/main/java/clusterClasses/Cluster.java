@@ -30,6 +30,8 @@ public class Cluster {
     private double hddMemory;
     private double price;
 
+    private int clusterGroup = 0;
+
     public Cluster(OptimalStorageCluster optimal, int routersNumber) {
         this.servers = new ArrayList<>();
         this.storageSize = optimal.getStorageSize();
@@ -67,79 +69,20 @@ public class Cluster {
         this.servers.add(server);
     }
 
-    public void delServer(Server server) { this.servers.remove(server);}
 
 
-    public void createClusterVariation(Config[] configs, int id){
+    public void createClusterVariationRecursively(Config[] configs, int id){
         if(lessStoragesIns > 0){
-            Config cfg = configs[0];
-            int maxTmpStorages = (int)Math.floor((cfg.getRAM() - (cfg.getRAM()*0.1 >= 10 ? 10 : cfg.getRAM()*0.1) - Nginx.getRam() - (lessRouterIns > 0 ? Router.getRam() : 0) -TarantoolCore.getRam())/storageSize);
-            for (int i = 1; i < configs.length; i++) {
 
-                double tmpRAM = configs[i].getRAM();
-                double tmpCORE = configs[i].getCORE();
+            Config cfg = ConfigsList.nextStepConfig(configs,lessRouterIns,lessStoragesIns,storageSize);
 
-                int tmpStorages = (int)Math.floor((tmpRAM - (tmpRAM*0.1 >= 10 ? 10 : tmpRAM*0.1) - Nginx.getRam() - (lessRouterIns > 0 ? Router.getRam() : 0) -TarantoolCore.getRam())/storageSize);;
-                double tmpFreeCores = tmpCORE - tmpStorages*Storage.getCore()- Nginx.getCore() - (lessRouterIns > 0 ? Router.getCore() : 0) -TarantoolCore.getCore();
-                int lessStorages = lessStoragesIns - tmpStorages;
-                if(lessStorages > 0 && tmpStorages >= maxTmpStorages && tmpFreeCores >= 0){
-                    cfg = configs[i];
-                    maxTmpStorages = tmpStorages;
-                }
-                if (lessStorages <= 0 && tmpStorages <= maxTmpStorages  && tmpFreeCores >= 0){
-                    cfg = configs[i];
-                    maxTmpStorages = tmpStorages;
-                }
+            storageImplementationOnNewServer(cfg, id);
 
-            }
-
-            double tmpRAM = cfg.getRAM();
-            double tmpCORE = cfg.getCORE();
-
-            double ramLessServer = tmpRAM - (tmpRAM*0.1 >= 10 ? 10 : tmpRAM*0.1) - Nginx.getRam() - (lessRouterIns > 0 ? Router.getRam() : 0) -TarantoolCore.getRam();
-            double coreLessServer = tmpCORE - Nginx.getCore() - (lessRouterIns > 0 ? Router.getCore() : 0) -TarantoolCore.getCore();
-            int storageBoxes = (int)Math.floor(ramLessServer/storageSize);
-            ServerInstances serverInstances = new ServerInstances();
-
-            if(this.lessRouterIns > 0) {
-                serverInstances.addInstance(new Router(this.routersNumber-this.lessRouterIns));
-                this.lessRouterIns--;
-            }
-
-            int k = 0;
-            while(lessStoragesIns > 0 && k < storageBoxes && coreLessServer >= Storage.getCore()){
-                serverInstances.addInstance(new Storage(this.storagesNumber-this.lessStoragesIns, storageSize));
-                this.lessStoragesIns--;
-                coreLessServer-=Storage.getCore();
-                ramLessServer-=storageSize;
-                k++;
-            }
-
-            ServerInfo serverInfo = new ServerInfo(
-                    ramLessServer,
-                    coreLessServer,
-                    k,
-                    1
-
-            );
-            serverInfo.setCoreAvailability();
-            serverInfo.setNginxAvailability();
-
-            Server server = new Server(
-                    id,
-                    new ServerConfig(cfg),
-                    serverInfo,
-                    serverInstances
-            );
-
-            this.addServer(server);
-            this.fullClusterData+=tmpRAM;
-
-            this.createClusterVariation(configs, id+1);
+            this.createClusterVariationRecursively(configs, id+1);
         }
         else {
             if (lessRouterIns > 0){
-                this.routerImplementation(id);
+                this.routerImplementation();
             }
             if(ETCD.getFlagNeed()) {
                 etcdImplementation(id);
@@ -149,14 +92,69 @@ public class Cluster {
         }
     }
 
+    public void createClusterVariationWithNextStepMethod(Config[] configs, int id){
+        if(lessStoragesIns > 0){
 
-    public void setHddMemory(Server server) {
-        server.hddSpace();
-        server.addHddCost();
-        this.hddMemory += server.getServerInfo().getHddMemory();
+            Config cfg = ConfigsList.nextStepConfig(configs,lessRouterIns,lessStoragesIns,storageSize);
+
+            storageImplementationOnNewServer(cfg, id);
+
+            this.createClusterVariationWithNextStepMethod(configs, id+1);
+        }
+        else {
+            if (lessRouterIns > 0){
+                this.routerImplementation();
+            }
+            if(ETCD.getFlagNeed()) {
+                etcdImplementation(id);
+            }
+            setPrice();
+            ClusterList.getInstance().addClusterToList(this);
+        }
     }
 
-    public void setPrice() {
+    private void storageImplementationOnNewServer(Config cfg, int id){
+        double tmpRAM = cfg.getRAM();
+        double tmpCORE = cfg.getCORE();
+
+        double ramLessServer = tmpRAM - (tmpRAM*0.1 >= 10 ? 10 : tmpRAM*0.1) - Nginx.getRam() - (lessRouterIns > 0 ? Router.getRam() : 0) -TarantoolCore.getRam();
+        double coreLessServer = tmpCORE - Nginx.getCore() - (lessRouterIns > 0 ? Router.getCore() : 0) -TarantoolCore.getCore();
+        int storageBoxes = (int)Math.floor(ramLessServer/storageSize);
+        ServerInstances serverInstances = new ServerInstances();
+
+        if(this.lessRouterIns > 0) {
+            serverInstances.addInstance(new Router(this.routersNumber-this.lessRouterIns));
+            this.lessRouterIns--;
+        }
+
+        int k = 0;
+        while(lessStoragesIns > 0 && k < storageBoxes && coreLessServer >= Storage.getCore()){
+            serverInstances.addInstance(new Storage(this.storagesNumber-this.lessStoragesIns, storageSize));
+            this.lessStoragesIns--;
+            coreLessServer-=Storage.getCore();
+            ramLessServer-=storageSize;
+            k++;
+        }
+
+        ServerInfo serverInfo = new ServerInfo(ramLessServer, coreLessServer, k, 1);
+
+        serverInfo.setCoreAvailability();
+        serverInfo.setNginxAvailability();
+
+        Server server = new Server(id, new ServerConfig(cfg), serverInfo, serverInstances);
+
+        this.addServer(server);
+        this.fullClusterData+=tmpRAM;
+    }
+
+
+    private void setHddMemory(Server server) {
+        server.hddSpace();
+        server.addHddCost();
+        this.hddMemory += server.getServerInfo().getHddMemory().getFullMemo();
+    }
+
+    private void setPrice() {
         for (Server server: servers) {
             setHddMemory(server);
             this.price+=server.getPrice();
@@ -164,7 +162,13 @@ public class Cluster {
     }
 
     private void etcdImplementation(int id){
-        boolean etcdFlag = true;
+        findServerForETCD();
+        if (ETCD.getFlagNeed()){
+            addServer(createServerForETCD());
+        }
+    }
+
+    private void findServerForETCD(){
         for (Server server: servers) {
             double tmpRAM = server.getServerInfo().getFreeRAM();
             double tmpCORE = server.getServerInfo().getFreeProcess();
@@ -172,35 +176,35 @@ public class Cluster {
                 server.getServerInfo().setEtcdAvailability();
                 server.getServerInfo().setFreeProcess(tmpCORE - ETCD.getCore());
                 server.getServerInfo().setFreeRAM(tmpRAM - ETCD.getRam());
-               etcdFlag = false;
-               break;
+                ETCD.setFlagNeed();
+                break;
             }
-        }
-        if (etcdFlag){
-            Config config = ConfigsList.findBestServerForLessInstances(ETCD.getRam(),ETCD.getCore());
-
-            ServerInfo serverInfo = new ServerInfo(
-                    config.getRAM() - Nginx.getRam() - (config.getRAM()*0.1 >= 10 ? 10 : config.getRAM()*0.1) ,
-                    config.getCORE() - Nginx.getCore(),
-                    0,
-                    0
-
-            );
-            serverInfo.setEtcdAvailability();
-            serverInfo.setNginxAvailability();
-
-            Server server = new Server(
-                    id,
-                    new ServerConfig(config),
-                    serverInfo,
-                    new ServerInstances()
-            );
-
-            this.addServer(server);
         }
     }
 
-    private void routerImplementation(int id){
+    private Server createServerForETCD(){
+        Config config = ConfigsList.findBestServerForLessInstances(ETCD.getRam(),ETCD.getCore());
+
+        ServerInfo serverInfo = new ServerInfo(
+                config.getRAM() - Nginx.getRam() - (config.getRAM()*0.1 >= 10 ? 10 : config.getRAM()*0.1) ,
+                config.getCORE() - Nginx.getCore(),
+                0,
+                0
+        );
+        serverInfo.setEtcdAvailability();
+        serverInfo.setNginxAvailability();
+
+        return new Server(servers.size(), new ServerConfig(config), serverInfo, new ServerInstances());
+    }
+
+    private void routerImplementation(){
+        findServersForLessRouters();
+        if (lessRouterIns > 0){
+            serverForRouters();
+        }
+    }
+
+    private void findServersForLessRouters(){
         while(this.lessRouterIns > 0){
             int startRoundRouters = this.lessRouterIns;
 
@@ -221,34 +225,38 @@ public class Cluster {
                 break;
             }
         }
-
-        if (lessRouterIns > 0){
-            Config config = ConfigsList.findBestServerForLessInstances(Router.getRam()*lessRouterIns,Router.getCore()*(lessRouterIns+1));
-            ServerInfo serverInfo = new ServerInfo(
-                    config.getRAM() -  Nginx.getRam() - (config.getRAM()*0.1 >= 10 ? 10 : config.getRAM()*0.1)  - lessRouterIns*Router.getRam(),
-                    config.getCORE() - Nginx.getCore() - lessRouterIns*Router.getCore(),
-                    0,
-                    lessRouterIns
-
-            );
-            serverInfo.setCoreAvailability();
-            serverInfo.setNginxAvailability();
-
-            ServerInstances serverInstances = new ServerInstances();
-            for (int i = 0; i < lessRouterIns; i++) {
-                serverInstances.addInstance(new Router(routersNumber-lessRouterIns));
-            }
-
-            Server server = new Server(
-                    id,
-                    new ServerConfig(config),
-                    serverInfo,
-                    serverInstances
-            );
-
-            this.addServer(server);
-        }
     }
+
+    private void serverForRouters(){
+        Config config = ConfigsList.findBestServerForLessInstances(Router.getRam()*lessRouterIns,Router.getCore()*(lessRouterIns+1));
+        ServerInfo serverInfo = new ServerInfo(
+                config.getRAM() -  Nginx.getRam() - (config.getRAM()*0.1 >= 10 ? 10 : config.getRAM()*0.1)  - lessRouterIns*Router.getRam(),
+                config.getCORE() - Nginx.getCore() - lessRouterIns*Router.getCore(),
+                0,
+                lessRouterIns
+
+        );
+        serverInfo.setCoreAvailability();
+        serverInfo.setNginxAvailability();
+
+        ServerInstances serverInstances = new ServerInstances();
+        for (int i = 0; i < lessRouterIns; i++) {
+            serverInstances.addInstance(new Router(routersNumber-lessRouterIns));
+        }
+
+        Server server = new Server(servers.size(), new ServerConfig(config), serverInfo, serverInstances);
+        this.addServer(server);
+    }
+
+
+
+
+
+
+
+
+
+
     public double getPrice() {
         return price;
     }

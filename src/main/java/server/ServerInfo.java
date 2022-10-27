@@ -9,7 +9,7 @@ public class ServerInfo {
     private boolean etcdAvailability = false;
     private boolean coreAvailability = false;
 
-    private double hddMemory;
+    private ServerHDDSpace hddMemory;
 
     public ServerInfo(double freeRAM, double freeCore, int storagesNumber, int routersNumber) {
         this.freeRAM = freeRAM;
@@ -29,11 +29,11 @@ public class ServerInfo {
         this.hddMemory = serverInfo.getHddMemory();
     }
 
-    public double getHddMemory() {
+    public ServerHDDSpace getHddMemory() {
         return hddMemory;
     }
 
-    public void setHddMemory(double hddMemory) {
+    public void setHddMemory(ServerHDDSpace hddMemory) {
         this.hddMemory = hddMemory;
     }
 

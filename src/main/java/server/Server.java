@@ -37,7 +37,7 @@ public class Server {
     }
 
     public void addHddCost(){
-        this.price += serverInfo.getHddMemory() * 0.24;
+        this.price += serverInfo.getHddMemory().getFullMemo() * 0.24;
     }
 
     public double getPrice() {
@@ -45,15 +45,7 @@ public class Server {
     }
 
     public void hddSpace(){
-        double ram = serverInfo.getStoragesNumber() * Cluster.getStorageSize() + serverInfo.getRoutersNumber();
-        serverInfo.setHddMemory(
-                ram*0.4 + //tarantool
-                ram +     //snap
-                (serverInfo.getRoutersNumber() + serverInfo.getStoragesNumber()) + //logs
-                (serverInfo.isEtcdAvailability() ? 5 : 0) + //etcd
-                (serverInfo.isNginxAvailability() ? 5 : 0) + //nginx
-                30  // os
-        );
+        serverInfo.setHddMemory(new ServerHDDSpace(this.getServerInfo()));
     }
 
     public ServerConfig getServerConfig() {

@@ -5,6 +5,7 @@ import configClasses.Config;
 import configClasses.ConfigsList;
 import instances.*;
 
+import java.net.ConnectException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -89,18 +90,15 @@ public class Apt {
 
         optimal.optimalSizeForStorage(dataForStorages);
 
-        System.out.println(optimal);
+        Config[] conf = ConfigsList.listOfSuitableConfigurations(optimal.getStorageSize());
 
+        Cluster cluster = new Cluster(optimal,routerNumber);
+        if ( optimal.getNumber() > 9)
+                cluster.createClusterVariationWithNextStepMethod(conf,0);
+        else
+                cluster.createClusterVariationRecursively(conf,0);
 
-        Config[] conf = listOfSuitableConfigurations(optimal.getStorageSize());
-        for (Config cfg : conf) {
-            System.out.printf(cfg+" ");
-        }
-
-        new Cluster(optimal,routerNumber).createClusterVariation(conf,0);
-
-
-        Cluster cluster = ClusterList.getInstance().getClusterList();
+        cluster = ClusterList.getInstance().getClusterList();
 
         System.out.println("Result price: " + cluster.getPrice() +" \nResult cluster: \n" + cluster);
 
@@ -114,24 +112,6 @@ public class Apt {
 
 
 
-     public static Config[] listOfSuitableConfigurations(double size){
 
-        List<Config> list = new ArrayList<>();
-
-        for (Config cfg : ConfigsList.CONFIGS) {
-            double tmpRAM = cfg.getRAM() - (cfg.getRAM()*0.1 > 10 ? 10 : cfg.getRAM()*0.1) - Nginx.getRam() - TarantoolCore.getRam() - Router.getRam();
-            double tmpCore = cfg.getCORE() - TarantoolCore.getCore() - Nginx.getCore() - Router.getCore();  //core, nginx,
-            if ( tmpRAM  >= size && tmpCore >= Storage.getCore()){
-                list.add(cfg);
-            }
-        }
-
-         Config[] result = new Config[list.size()];
-         for(int i =0;i<list.size();i++){
-             result[i] = list.get(i);
-         }
-
-        return result;
-     }
 
 }
