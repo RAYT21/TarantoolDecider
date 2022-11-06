@@ -1,4 +1,4 @@
-package configClasses;
+package clusterCreator.configClasses;
 
 public class Config {
 
@@ -28,7 +28,7 @@ public class Config {
 
     @Override
     public String toString() {
-        return "configClasses.Config{" +
+        return "clusterCreator.configClasses.Config{" +
                 "RAM=" + RAM +
                 ", CORE=" + CORE +
                 ", PRICE=" + PRICE +

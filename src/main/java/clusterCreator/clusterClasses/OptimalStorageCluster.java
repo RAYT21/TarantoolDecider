@@ -1,4 +1,4 @@
-package clusterClasses;
+package clusterCreator.clusterClasses;
 
 public class OptimalStorageCluster {
 
@@ -39,7 +39,7 @@ public class OptimalStorageCluster {
 
     @Override
     public String toString() {
-        return "clusterClasses.OptimalStorageCluster{" +
+        return "clusterCreator.clusterClasses.OptimalStorageCluster{" +
                 "number=" + number +
                 ", storageSize=" + storageSize +
                 ", fullDataSize=" + fullDataSize +

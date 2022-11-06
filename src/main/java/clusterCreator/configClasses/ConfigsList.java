@@ -1,9 +1,9 @@
-package configClasses;
+package clusterCreator.configClasses;
 
-import instances.Nginx;
-import instances.Router;
-import instances.Storage;
-import instances.TarantoolCore;
+import clusterCreator.instances.Nginx;
+import clusterCreator.instances.Router;
+import clusterCreator.instances.Storage;
+import clusterCreator.instances.TarantoolCore;
 
 import java.util.ArrayList;
 import java.util.List;

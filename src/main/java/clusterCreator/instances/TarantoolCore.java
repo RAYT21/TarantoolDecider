@@ -1,4 +1,4 @@
-package instances;
+package clusterCreator.instances;
 
 public class TarantoolCore {
     private static final double ram = 0.25;

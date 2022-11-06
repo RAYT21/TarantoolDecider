@@ -1,7 +1,7 @@
-package server;
+package clusterCreator.server;
 
 
-import configClasses.Config;
+import clusterCreator.configClasses.Config;
 
 public class ServerConfig {
     private final Config config;

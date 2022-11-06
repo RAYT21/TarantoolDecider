@@ -1,10 +1,10 @@
-package server;
+package clusterCreator.server;
 
-
-import clusterClasses.Cluster;
 
 public class Server {
     private int id;
+
+    private String name = "";
     private ServerConfig serverConfig;
     private ServerInfo serverInfo;
     private ServerInstances serverInstances;
@@ -62,10 +62,20 @@ public class Server {
         return serverInstances;
     }
 
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
     @Override
     public String toString() {
         return "\n\tServer{" +
                 "\n\tid=" + id +
+                "\n\tname=" + name +
                 "\n\tserverConfig=" + serverConfig +
                 "\n\tserverInfo=" + serverInfo +
                 "\n\tserverInstances=" + serverInstances +

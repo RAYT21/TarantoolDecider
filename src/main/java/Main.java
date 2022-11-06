@@ -1,10 +1,10 @@
-import clusterClasses.Cluster;
-import clusterClasses.ClusterList;
-import clusterClasses.OptimalStorageCluster;
-import clusterClasses.ReplicationCluster;
-import configClasses.Config;
-import configClasses.ConfigsList;
-import instances.*;
+import clusterCreator.clusterClasses.Cluster;
+import clusterCreator.clusterClasses.ClusterList;
+import clusterCreator.clusterClasses.OptimalStorageCluster;
+import clusterCreator.clusterClasses.ReplicationCluster;
+import clusterCreator.configClasses.Config;
+import clusterCreator.configClasses.ConfigsList;
+import clusterCreator.instances.*;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -19,9 +19,9 @@ public class Main {
 
     public static void main(String[] args) {
         double acceptableAmountOfData = 200;  //Integer.parseInt(args[0]);
-        double requestPerSecond = 2000;      //Integer.parseInt(args[1]);
+        double requestPerSecond = 20000;      //Integer.parseInt(args[1]);
         double routerVelocity = 2000;        //Integer.parseInt(args[2]); в зависимости от контура (ентерпрайз 2к, тдк 3-4к)
-        int replicationLevel = 4;         //Integer.parseInt(args[3]); Может быть его от контура автоматически заполнять?
+        int replicationLevel = 1;         //Integer.parseInt(args[3]); Может быть его от контура автоматически заполнять?
         double percent = 0.75; // Double.parseDouble(args[4])
         double coreDepend = list.contains("prod") ? 1.5 : 1;
 

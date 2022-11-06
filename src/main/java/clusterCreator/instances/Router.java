@@ -1,4 +1,4 @@
-package instances;
+package clusterCreator.instances;
 
 public class Router {
 

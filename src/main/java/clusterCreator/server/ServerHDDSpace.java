@@ -1,6 +1,6 @@
-package server;
+package clusterCreator.server;
 
-import clusterClasses.Cluster;
+import clusterCreator.clusterClasses.Cluster;
 
 public class ServerHDDSpace {
 

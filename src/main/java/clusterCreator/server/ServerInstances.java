@@ -1,7 +1,7 @@
-package server;
+package clusterCreator.server;
 
-import instances.Router;
-import instances.Storage;
+import clusterCreator.instances.Router;
+import clusterCreator.instances.Storage;
 
 import java.util.ArrayList;
 import java.util.List;

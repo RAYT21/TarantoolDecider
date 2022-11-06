@@ -1,7 +1,4 @@
-package clusterClasses;
-
-import java.util.ArrayList;
-import java.util.List;
+package clusterCreator.clusterClasses;
 
 public class ClusterList {
 

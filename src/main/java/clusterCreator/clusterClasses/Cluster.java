@@ -1,12 +1,12 @@
-package clusterClasses;
+package clusterCreator.clusterClasses;
 
-import configClasses.Config;
-import configClasses.ConfigsList;
-import instances.*;
-import server.Server;
-import server.ServerConfig;
-import server.ServerInfo;
-import server.ServerInstances;
+import clusterCreator.configClasses.Config;
+import clusterCreator.configClasses.ConfigsList;
+import clusterCreator.instances.*;
+import clusterCreator.server.Server;
+import clusterCreator.server.ServerConfig;
+import clusterCreator.server.ServerInfo;
+import clusterCreator.server.ServerInstances;
 
 import java.util.ArrayList;
 import java.util.List;

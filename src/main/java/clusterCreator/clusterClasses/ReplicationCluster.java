@@ -1,6 +1,6 @@
-package clusterClasses;
+package clusterCreator.clusterClasses;
 
-import server.Server;
+import clusterCreator.server.Server;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -22,9 +22,11 @@ public class ReplicationCluster {
             replCluster.add(cluster);
             fullPrice += cluster.getPrice();
         }
-        Cluster tmpETCD = new Cluster();
-        replCluster.add(tmpETCD);
-        fullPrice += tmpETCD.getPrice();
+        if(replicationLevel > 1){
+            Cluster tmpETCD = new Cluster();
+            replCluster.add(tmpETCD);
+            fullPrice += tmpETCD.getPrice();
+        }
 
     }
 

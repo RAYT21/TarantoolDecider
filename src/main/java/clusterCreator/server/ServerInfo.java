@@ -1,4 +1,4 @@
-package server;
+package clusterCreator.server;
 
 public class ServerInfo {
     private double freeRAM;
